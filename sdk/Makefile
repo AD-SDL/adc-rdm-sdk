@@ -1,59 +1,71 @@
-sdk_container = sdk_adc
-name = name ${later_variable}
-
 help:
-	@echo "    hello <name>               Say hello <name> "
+	@echo "    me               		 Check you status "
 	@echo "    keywords                	 Execute Query Keywords "
 	@echo "    keywordsId                Execute Query Keywords by id "
 
 
-auth:
-	python main.py authtoken
 
-keywords:
-	python main.py keywords
+me:
+	python main.py me
 
-keyword:
-	python main.py keyword
+users:
+	python main.py users
+
+user:
+	python main.py user $u
+
+samples:
+	python main.py samples
+
+sample:
+	python main.py sample $u
+
+createsample:
+	python main.py createsample
 
 studies:
 	python main.py studies
 
+study:
+	python main.py study $u
+
 createstudy:
 	python main.py createstudy $v
 
+createtest:
+	python main.py createtest
 createvariables:
 	python main.py createvariables
 
 createquerys:
 	python main.py createquerys
 
-me:
-	python main.py me
-
-users:
-	python main.py users $id
-
-user:
-	python main.py user $id
-
-samples:
-	python main.py samples
-
-sample:
-	python main.py sample $id
-
 investigations:
 	python main.py investigations
 
 investigation:
-	python main.py investigation $id
+	python main.py investigation $u
 
 createinvestigation:
 	python main.py createinvestigation $v
+
+customvariablesquerys:
+	python main.py customvarq $v $q
+
+auth:
+	python main.py authtoken
 
 showquerys:
 	ls querys/
 
 showvariables:
 	ls variables/
+
+setup:
+	pip3 install -r requirements.txt
+
+keywords:
+	python main.py keywords
+
+keyword:
+	python main.py keyword

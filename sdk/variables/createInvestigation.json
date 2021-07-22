@@ -2,6 +2,6 @@
     "name": "Test Study Name",
     "description": "Test Study Description",
     "keywords": ["test", "graphql", "demo", "argonne"],
-    "sampleGlobalIds" : ["U2FtcGxlTm9kZToyNg==", "U2FtcGxlTm9kZToyNw=="],
-    "studyGlobalId": "U3R1ZHlOb2RlOjM0"
+    "sampleGlobalIds" : ["VXNlck5vZGU6Mg=="],
+    "studyGlobalId": "U3R1ZHlOb2RlOjE="
 }
