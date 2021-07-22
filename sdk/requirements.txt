@@ -1,2 +1,10 @@
 click==7.1.2
 typer==0.3.2
+certifi==2021.5.30
+charset-normalizer==2.0.3
+click==7.1.2
+idna==3.2
+requests==2.26.0
+typer==0.3.2
+urllib3==1.26.6
+pylint==2.9.3

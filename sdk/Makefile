@@ -1,17 +1,59 @@
-#sdk_container = sdk_adc
-#name = name ${later_variable}
-#
-#help:
-#	@echo "    hello <name>               Say hello <name> "
-#	@echo "    up                         spin up docker images"
-#	@echo "    stop                       stop docker images"
-#	@echo "    down                       remove docker images"
-#	@echo "    start                      Enter to SDK"
-#
-#
-#hello $(later_variable):
-#ifdef later_variable
-#	python main.py hello $(later_variable)
-#else
-#	@echo ' no have a name to say hey'
-#endif
+sdk_container = sdk_adc
+name = name ${later_variable}
+
+help:
+	@echo "    hello <name>               Say hello <name> "
+	@echo "    keywords                	 Execute Query Keywords "
+	@echo "    keywordsId                Execute Query Keywords by id "
+
+
+auth:
+	python main.py auth $id
+
+keywords:
+	python main.py keywords
+
+keyword:
+	python main.py keyword
+
+studies:
+	python main.py studies
+
+createstudy:
+	python main.py createstudy $v
+
+createvariables:
+	python main.py createvariables
+
+createquerys:
+	python main.py createquerys
+
+me:
+	python main.py me
+
+users:
+	python main.py users $id
+
+user:
+	python main.py user $id
+
+samples:
+	python main.py samples
+
+sample:
+	python main.py sample $id
+
+investigations:
+	python main.py investigations
+
+investigation:
+	python main.py investigation $id
+
+createinvestigation:
+	python main.py createinvestigation $v
+
+showquerys:
+	ls querys/
+
+showvariables:
+	ls variables/

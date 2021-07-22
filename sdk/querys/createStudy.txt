@@ -1,0 +1,17 @@
+mutation ($name: String!, $description: String!, $keywords: [String]) {
+    createStudy(
+        name: $name,
+        description: $description,
+        keywords: $keywords
+    ){
+        study {
+            id
+            name
+            description
+            keywords
+            isOwner
+            user { id username }
+            investigations { id name }
+        }
+    }
+}
