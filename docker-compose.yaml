@@ -1,7 +1,0 @@
-services:
-  sdk:
-    container_name: sdk_adc
-    build: .
-    volumes:
-    - ./sdk/:/app
-    tty: true
