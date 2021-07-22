@@ -4,16 +4,30 @@ import json
 import os
 import platform
 import globus_sdk
+from dotenv import load_dotenv
+load_dotenv('.env')
+print(os.getenv("TOKEN"))
 
 app = typer.Typer()
-TOKEN = ''
-# TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJzdWIiOiI2MTRhY2M5ZC01N2U2LTQzNWYtOTAzNS0xY2I1ZjI2ZmQ3MjAiLCJuYW1lIjoic2RrQ2xpZW50Q3JlZGVudGlhbHMiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiI2MTRhY2M5ZC01N2U2LTQzNWYtOTAzNS0xY2I1ZjI2ZmQ3MjBAY2xpZW50cy5hdXRoLmdsb2J1cy5vcmciLCJpZGVudGl0eV9wcm92aWRlciI6IjNhNzQ4NzdiLWUyYTMtNDRiMS04OTU4LWVkZTEwMzFiMTgyNyIsImlkZW50aXR5X3Byb3ZpZGVyX2Rpc3BsYXlfbmFtZSI6Ikdsb2J1cyBBdXRoIiwiZW1haWwiOm51bGwsImxhc3RfYXV0aGVudGljYXRpb24iOm51bGwsImlkZW50aXR5X3NldCI6W3sic3ViIjoiNjE0YWNjOWQtNTdlNi00MzVmLTkwMzUtMWNiNWYyNmZkNzIwIiwibmFtZSI6InNka0NsaWVudENyZWRlbnRpYWxzIiwidXNlcm5hbWUiOiI2MTRhY2M5ZC01N2U2LTQzNWYtOTAzNS0xY2I1ZjI2ZmQ3MjBAY2xpZW50cy5hdXRoLmdsb2J1cy5vcmciLCJpZGVudGl0eV9wcm92aWRlciI6IjNhNzQ4NzdiLWUyYTMtNDRiMS04OTU4LWVkZTEwMzFiMTgyNyIsImlkZW50aXR5X3Byb3ZpZGVyX2Rpc3BsYXlfbmFtZSI6Ikdsb2J1cyBBdXRoIiwiZW1haWwiOm51bGwsImxhc3RfYXV0aGVudGljYXRpb24iOm51bGx9XSwiaXNzIjoiaHR0cHM6Ly9hdXRoLmdsb2J1cy5vcmciLCJhdWQiOiI2MTRhY2M5ZC01N2U2LTQzNWYtOTAzNS0xY2I1ZjI2ZmQ3MjAiLCJleHAiOjE2MjcwODc0NDAsImlhdCI6MTYyNjkxNDY0MCwiYXRfaGFzaCI6InNiUnA1TDlsV2RiZ2FZQ1liOFpOYm9KMk5fNldZMjRPNW1hVHBEQmw2NjAifQ.Bf6cOmkuojoOMYA_d9C-9jfIBHzqIN_-QoXY1gNnZIFGy8CU5U744lF6eI78MEVP_LnGIQjFVhaJI2-mTG3gg9AIhO6zbMgtFDOjQmXI-DPudaP49bpsId2dIiomxReP9sXQ1Y6UJezP_e_rWFpHgAO87-Q7UlZrBDkza-9WH0jbCk4Z8DQwdqUT1nbX7Gmad3VwF78e34jEd4iK-KEIbz3YlknQZ2kNMOL6GeNw49c_mKH5klnSZm649AizY4Vv3WtRyKE1EtOKX7Lco0tW3Mzw9z17GsfJIktx0Nsi5odShgaSp54kg_JT8sZs2vHy64hZ-CZYRs-MuLPJRcLC5w'
-headers = {
-    'Authorization': 'Bearer' + TOKEN,
-    'Content-Type': 'application/json',
-    'Cookie': 'csrftoken=7YtuX6V3HIEg3LJv84RyoUjMl7c8MvzdS5HdejDtWDLQPtlyOa3QvyJsndr88YJ8'
-}
 
+authtoken=''
+if (os.getenv("TOKEN")):
+    authtoken = os.getenv("TOKEN")
+token = authtoken
+auth = "JWT " + token
+headers = {
+        'Authorization': auth,
+        'Content-Type': 'application/json'
+    }
+
+@app.command()
+def authtoken():
+    print("Insert token here:")
+    authtoken= input()
+    token = authtoken
+    auth = "JWT " + token
+    makeheader(auth)
+    print(auth)
 
 @app.command()
 def send(v: str):
@@ -252,6 +266,7 @@ def auth(id: str):
     AUTH_TOKEN = globus_auth_data["access_token"]
     TRANSFER_TOKEN = globus_transfer_data["access_token"]
     TOKEN = AUTH_TOKEN
+
 
 
 if __name__ == "__main__":

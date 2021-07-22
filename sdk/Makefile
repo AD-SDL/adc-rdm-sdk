@@ -8,7 +8,7 @@ help:
 
 
 auth:
-	python main.py auth $id
+	python main.py authtoken
 
 keywords:
 	python main.py keywords
