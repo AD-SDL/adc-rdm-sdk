@@ -1,0 +1,5 @@
+query ($id: ID!) {
+        keyword (id: $id) {
+            id
+        }
+    }

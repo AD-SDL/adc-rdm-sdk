@@ -1,0 +1,14 @@
+query ($id: ID!){
+    investigation(id: $id){
+        id
+        name
+        description
+        keywords
+        created
+        updated
+        study { id name description keywords }
+        user { id username email }
+        samples { id name url }
+        isOwner
+    }
+}

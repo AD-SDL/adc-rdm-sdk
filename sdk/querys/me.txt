@@ -1,0 +1,15 @@
+query {
+    me {
+        id
+        username
+        email
+        studies { id name description }
+        investigations { id name description
+            samples {
+                name
+                url
+            }
+        }
+        samples { id name url }
+    }
+}
