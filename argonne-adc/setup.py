@@ -13,7 +13,7 @@ setup(
     long_description = long_description,
     long_description_content_type = "text/markdown",
     url = 'https://github.com/AD-SDL/adc-rdm-sdk',
-    py_modules = ['adc', 'app'],
+    py_modules = ['adc', 'querys'],
     packages = find_packages(),
     install_requires = [requirements],
     python_requires='>=3.7',
@@ -25,6 +25,8 @@ setup(
         [console_scripts]
         adc-auth=adc:authtoken
         adc-me=adc:me
+        adc-users=adc:users
         adc-user=adc:user
+        
     '''
 )
