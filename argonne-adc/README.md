@@ -11,16 +11,6 @@ pip install twine
 
 ```
 
-### Enter SDK
-```
-
-```
-
-### Enter sdk
-```
-when you start familiarizing with SDK you will need to create a "sdk/.env" with the token value from your app. Please refer to example.env file.
-```
-
 
 ### Available **adc** commands:
 ```
