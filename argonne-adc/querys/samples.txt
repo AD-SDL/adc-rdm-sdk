@@ -1,0 +1,16 @@
+query {
+    samples {
+        edges {
+            node {
+                id
+                name
+                url
+                keywords
+                created
+                updated
+                user { id username email }
+                isOwner
+            }
+        }
+    }
+}

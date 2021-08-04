@@ -1,0 +1,18 @@
+query {
+    investigations {
+        edges {
+            node {
+                id
+                name
+                description
+                keywords
+                created
+                updated
+                study { id name description keywords }
+                user { id username email }
+                samples { id name url }
+                isOwner
+            }
+        }
+    }
+}

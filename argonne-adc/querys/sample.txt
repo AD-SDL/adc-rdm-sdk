@@ -1,0 +1,12 @@
+query ($id: ID!){
+    sample(id: $id){
+        id
+        name
+        keywords
+        url
+        created
+        updated
+        user { id username email }
+        isOwner
+    }
+}
