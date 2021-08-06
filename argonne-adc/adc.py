@@ -103,7 +103,7 @@ def me():
         print("Something is Wrong!!")
 
     data = json.loads(r.text)
-    return data["data"]
+    return (json.dumps(data["data"], indent=4, sort_keys=True))
 
 
 @app.command()
@@ -115,7 +115,7 @@ def users():
     else:
         print("Something is Wrong!!")
     data = json.loads(r.text)
-    return data["data"]
+    return (json.dumps(data["data"], indent=4, sort_keys=True))
 
 
 @app.command()
@@ -133,7 +133,7 @@ def user(u=None):
     else:
         print("Something is Wrong!!")
     data = json.loads(r.text)
-    return data["data"]
+    return (json.dumps(data["data"], indent=4, sort_keys=True))
 
 
 """ Study """
@@ -148,7 +148,7 @@ def studies():
     else:
         print("Something is Wrong!!")
     data = json.loads(r.text)
-    return data["data"]
+    return (json.dumps(data["data"], indent=4, sort_keys=True))
 
 
 @app.command()
@@ -173,7 +173,7 @@ def study(u=None):
     else:
         print("Something is Wrong!!")
     data = json.loads(r.text)
-    return data["data"]
+    return (json.dumps(data["data"], indent=4, sort_keys=True))
 
 
 @app.command()
@@ -197,7 +197,7 @@ def createStudy(v=None):
     else:
         print("Something is Wrong!!")
     data = json.loads(r.text)
-    return data["data"]
+    return (json.dumps(data["data"], indent=4, sort_keys=True))
 
 
 '''Samples'''
@@ -212,7 +212,7 @@ def samples():
     else:
         print("Something is Wrong!!")
     data = json.loads(r.text)
-    return data["data"]
+    return (json.dumps(data["data"], indent=4, sort_keys=True))
 
 
 @app.command()
@@ -235,7 +235,7 @@ def sample(u=None):
     else:
         print("Something is Wrong!!")
     data = json.loads(r.text)
-    return data["data"]
+    return (json.dumps(data["data"], indent=4, sort_keys=True))
 
 
 ''' Investigations'''
@@ -249,7 +249,7 @@ def investigations():
     else:
         print("Something is Wrong!!")
     data = json.loads(r.text)
-    return data["data"]
+    return (json.dumps(data["data"], indent=4, sort_keys=True))
 
 
 @app.command()
@@ -272,7 +272,7 @@ def investigation(u=None):
     else:
         print("Something is Wrong!!")
     data = json.loads(r.text)
-    return data["data"]
+    return (json.dumps(data["data"], indent=4, sort_keys=True))
 
 
 @app.command()
@@ -294,7 +294,7 @@ def createInvestigation(v=None):
     if (r.status_code == 200):
         print("This is your response:")
         data = json.loads(r.text)
-        return data["data"]
+        return (json.dumps(data["data"], indent=4, sort_keys=True))
     else:
         print("Something is Wrong!!")
         data = json.loads(r.text)
@@ -350,7 +350,7 @@ def customvarq(v: str, q: str):
     else:
         print("Something is Wrong!!")
     data = json.loads(r.text)
-    return data["data"]
+    return (json.dumps(data["data"], indent=4, sort_keys=True))
 
 
 ''' Manage Files'''
