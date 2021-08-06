@@ -27,6 +27,18 @@ setup(
         adc-me=adc:me
         adc-users=adc:users
         adc-user=adc:user
+        adc-showToken=adc:showToken
+        adc-studies=adc:studies
+        adc-study=adc:study
+        adc-create-study=adc:createStudy
+        adc-create-sample=adc:createsample
+        adc-samples=adc:samples
+        adc-sample=adc:sample
+        adc-invs=adc:investigations
+        adc-inv=adc:investigation
+        adc-create-inv=adc:createInvestigation    
+        
+        
         
     '''
 )
