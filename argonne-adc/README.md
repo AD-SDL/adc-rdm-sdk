@@ -5,10 +5,9 @@
 ```
 pip install virtualenv
 virtualenv adc
-pip install lib/adc-0.0.1-py3-none-any.whl
+pip install release_lib/adc-0.0.1-py3-none-any.whl
 
 ```
-
 
 ### Available **adc** commands:
 ```
@@ -44,10 +43,6 @@ adc-create-inv
 
 ## How to use the Library: 
 ### Commands
-
-## How to use the SDK: 
-### Commands
-
 #### $ adc-me
 
 This command is used to check your user and the information linked to it. 
