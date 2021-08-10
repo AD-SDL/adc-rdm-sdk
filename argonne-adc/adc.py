@@ -335,6 +335,62 @@ def createsample(o=None, op=None, m=None):
     else:
         print("Something is Wrong!!")
     data = json.loads(r.text)
+    return (json.dumps(data, indent=4, sort_keys=True))
+
+@app.command()
+def createsampleWithFile(file=None):
+    operation ="""{"query":"mutation ($name: String!, $parentId: ID, $keywords: [String!], $file: Upload!) {createSample(name: $name, parentId: $parentId, keywords: $keywords, file: $file) {sample { id name keywords url}}}",     "variables": { "name": "test sample", "keywords": ["test", "python"], "file": null}}"""
+    map ="""{ "0": ["variables.file"]}"""
+    files = [
+        ('0', ("sample,json",
+               open('' + str(file), 'rb'), 'application/json'))
+    ]
+    payload = {
+        'operations': operation,
+        'map': map}
+
+    headers = {
+        'Authorization': "JWT " + token
+
+    }
+    r = requests.request("POST", url, headers=headers, data=payload, files=files)
+    if (r.status_code == 200):
+        print("This is your response:")
+    else:
+        print("Something is Wrong!!")
+    data = json.loads(r.text)
+    return (json.dumps(data, indent=4, sort_keys=True))
+
+def cSampleWithStr(file_content=None,nFile= None):
+    operation ="""{"query":"mutation ($name: String!, $parentId: ID, $keywords: [String!], $file: Upload!) {createSample(name: $name, parentId: $parentId, keywords: $keywords, file: $file) {sample { id name keywords url}}}",     "variables": { "name": "test sample", "keywords": ["test", "python"], "file": null}}"""
+    map ="""{ "0": ["variables.file"]}"""
+    file_name="sample_json"
+    file = open(file_name, "w+")
+    file.write(str(file_content))
+    file.close()
+    if nFile:
+        name=nFile
+    else:
+        name="sample_query.json"
+
+    files = [
+        ('0', (name,
+               open('' + str(file), 'w+'), 'application/json'))
+    ]
+    payload = {
+        'operations': operation,
+        'map': map}
+
+    headers = {
+        'Authorization': "JWT " + token
+
+    }
+    r = requests.request("POST", url, headers=headers, data=payload, files=files)
+    if (r.status_code == 200):
+        print("This is your response:")
+    else:
+        print("Something is Wrong!!")
+    data = json.loads(r.text)
     return data
 
 
