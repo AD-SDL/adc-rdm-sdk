@@ -33,7 +33,7 @@ def print_response(response):
 
 
 @app.command()
-def me():
+def current_user():
     client = get_client()
     response = client.get_current_user()
     print_response(response)
