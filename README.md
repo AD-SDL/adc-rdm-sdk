@@ -20,7 +20,6 @@ create-token
 current-user
 delete-token
 investigation
-me
 remove-permissions
 set-permissions
 studies

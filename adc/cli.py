@@ -61,13 +61,6 @@ def study(study_id: str):
 
 
 @app.command()
-def current_user():
-    client = get_client()
-    response = client.get_current_user()
-    print_response(response)
-
-
-@app.command()
 def investigation(investigation_id: str):
     client = get_client()
     response = client.get_investigation(investigation_id)
