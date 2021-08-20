@@ -1,9 +1,0 @@
-query {
-        samples {
-            edges {
-                node {
-                    id
-                }
-            }
-        }
-    }
