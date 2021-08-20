@@ -6,9 +6,10 @@
 ```
 pip install .
 ```
-* From any other directory:
+
+* with poetry:
 ```
-pip install <path/to/repo/.>
+poetry install
 ```
 
 ## Commands
