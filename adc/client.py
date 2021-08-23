@@ -1,26 +1,13 @@
 from gql import Client
 from gql.transport.aiohttp import AIOHTTPTransport
 from gql.transport.websockets import WebsocketsTransport
-from .queries import (
-    TOKENS,
-    STUDIES,
-    STUDY,
-    ME,
-    INVESTIGATION,
-    CREATE_TOKEN,
-    DELETE_TOKEN,
-    CREATE_STUDY,
-    CREATE_SAMPLE,
-    CREATE_INVESTIGATION,
-    SET_PERMISSIONS,
-    REMOVE_PERMISSIONS,
-    STUDY_SUBSCRIPTION,
-)
+from adc import queries, exceptions
 import json
 import requests
 
 
 class ADCClient:
+
     def __init__(self, token):
         self.token = token
         self.http_url = "http://localhost/graphql/"
@@ -33,30 +20,36 @@ class ADCClient:
             transport=WebsocketsTransport(url=self.ws_url, headers=self.headers)
         )
 
+    def _execute(self, query_cls, variables=None):
+        raw_response = self.client.execute(query_cls.query, variable_values=variables)
+        response = raw_response[query_cls.path] if query_cls.path else raw_response
+        self._check_for_errors(response)
+        return response
+
     def get_tokens(self):
-        return self.client.execute(TOKENS)
+        return self._execute(queries.TOKENS)
 
     def get_studies(self):
-        return self.client.execute(STUDIES)
+        return self._execute(queries.STUDIES)
 
     def get_study(self, study_id):
         variables = {"id": study_id}
-        return self.client.execute(STUDY, variable_values=variables)
+        return self._execute(queries.STUDY, variables)
 
     def get_current_user(self):
-        return self.client.execute(ME)
+        return self._execute(queries.CURRENT_USER)
 
     def get_investigation(self, investigation_id):
         variables = {"id": investigation_id}
-        return self.client.execute(INVESTIGATION, variable_values=variables)
+        return self._execute(queries.INVESTIGATION, variables)
 
     def create_token(self, name):
         variables = {"name": name}
-        return self.client.execute(CREATE_TOKEN, variable_values=variables)
+        return self._execute(queries.CREATE_TOKEN, variables)
 
     def delete_token(self, token_id):
         variables = {"tokenId": token_id}
-        return self.client.execute(DELETE_TOKEN, variable_values=variables)
+        return self._execute(queries.DELETE_TOKEN, variables)
 
     def create_study(self, name, description, keywords=[]):
         variables = {
@@ -64,7 +57,7 @@ class ADCClient:
             "keywords": keywords,
             "name": name,
         }
-        return self.client.execute(CREATE_STUDY, variable_values=variables)
+        return self._execute(queries.CREATE_STUDY, variables)
 
     def create_sample(
         self, file, study_id, name, keywords=[], parent_id=None, source=None
@@ -80,7 +73,7 @@ class ADCClient:
         if source:
             variables["source"] = source
         operations = json.dumps(
-            {"query": CREATE_SAMPLE, "variables": variables}
+            {"query": queries.CREATE_SAMPLE.raw_query, "variables": variables}
         )
         map = json.dumps({"0": ["variables.file"]})
         response = requests.post(
@@ -102,9 +95,7 @@ class ADCClient:
         }
         if investigation_type:
             variables["investigationType"] = investigation_type
-        return self.client.execute(
-            CREATE_INVESTIGATION, variable_values=variables
-        )
+        return self._execute(queries.CREATE_INVESTIGATION, variables)
 
     def set_permissions(self, study_id, user_id, permission_level):
         variables = {
@@ -112,17 +103,22 @@ class ADCClient:
             "userId": user_id,
             "permission": permission_level,
         }
-        return self.client.execute(SET_PERMISSIONS, variable_values=variables)
+        return self._execute(queries.SET_PERMISSIONS, variables)
 
     def remove_permissions(self, study_id, user_id):
         variables = {"studyId": study_id, "userId": user_id}
-        return self.client.execute(
-            REMOVE_PERMISSIONS, variable_values=variables
-        )
+        return self._execute(queries.REMOVE_PERMISSIONS, variables)
 
     def subscribe_to_study(self, study_id, callback):
         variables = {"studyId": study_id}
         for result in self.ws_client.subscribe(
-            STUDY_SUBSCRIPTION, variable_values=variables
+            queries.STUDY_SUBSCRIPTION.query, variable_values=variables
         ):
             callback(result)
+
+    @staticmethod
+    def _check_for_errors(response):
+        if "error" in response and response["error"]:
+            raise exceptions.ADCError(response["error"])
+        if "errors" in response:
+            raise exceptions.ADCError(response["errors"][0]["message"])

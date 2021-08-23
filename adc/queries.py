@@ -1,262 +1,30 @@
 from gql import gql
+from adc import raw_queries
 
 
-ME = gql(
-    """
-    query {
-        me {
-            email
-            name
-            globusUsername
-            organization
-            created
-            updated
-            id
-        }
-    }
-"""
-)
+class ADCQuery:
 
-STUDIES = gql(
-    """
-    query {
-        studies {
-            edges {
-                node {
-                    id
-                    name
-                    description
-                    keywords
-                    startDate
-                    status
-                    created
-                    updated
-                    permissions { user { id name email } level }
-                    investigations { id name description type keywords startDatetime endDatetime created updated }
-                    samples { id name url keywords created updated }
-                }
-            }
-        }
-    }
-    """
-)
+    def __init__(self, query, path=None):
+        self.raw_query = query
+        self.query = gql(self.raw_query)
+        self.path = path
 
-STUDY = gql(
-    """
-    query ($id: ID!) {
-        study(id: $id) {
-            id
-            name
-            description
-            keywords
-            startDate
-            status
-            created
-            updated
-            permissions { user { id name email } level }
-            investigations { id name description type keywords startDatetime endDatetime created updated }
-            samples { id name url keywords created updated }
-        }
-    }
-    """
-)
 
-CREATE_STUDY = gql(
-    """
-    mutation ($description: String, $keywords: [String], $name: String) {
-        createStudy(description: $description, keywords: $keywords, name: $name) {
-            success
-            error
-            study {
-                id
-                name
-                description
-                keywords
-                startDate
-                status
-                created
-                updated
-                permissions { user { id name email } level }
-                investigations { id name description type keywords startDatetime endDatetime created updated }
-                samples { id name url keywords created updated }
-            }
-        }
-    }
-    """
-)
+# Queries
+CURRENT_USER = ADCQuery(raw_queries.CURRENT_USER)
+TOKENS = ADCQuery(raw_queries.TOKENS)
+STUDIES = ADCQuery(raw_queries.STUDIES)
+STUDY = ADCQuery(raw_queries.STUDY)
+INVESTIGATION = ADCQuery(raw_queries.INVESTIGATION)
 
-CREATE_SAMPLE = """
-    mutation createSample($file: Upload!, $keywords: [String], $name: String!, $parentId: ID, $source: String, $studyId: ID!) {
-        createSample(file: $file, keywords: $keywords, name: $name, parentId: $parentId, source: $source, studyId: $studyId) {
-            success
-            error
-            sample {
-                id
-                name
-                user { id name email }
-                keywords
-                parent { id }
-                created
-                updated
-                url
-            }
-        }
-    }
-"""
+# Mutations
+CREATE_TOKEN = ADCQuery(raw_queries.CREATE_TOKEN, 'createToken')
+DELETE_TOKEN = ADCQuery(raw_queries.DELETE_TOKEN, 'deleteToken')
+CREATE_STUDY = ADCQuery(raw_queries.CREATE_STUDY, 'createStudy')
+CREATE_SAMPLE = ADCQuery(raw_queries.CREATE_SAMPLE, 'createSample')
+SET_PERMISSIONS = ADCQuery(raw_queries.SET_PERMISSIONS, 'setPermissions')
+REMOVE_PERMISSIONS = ADCQuery(raw_queries.REMOVE_PERMISSIONS, 'deletePermissions')
+CREATE_INVESTIGATION = ADCQuery(raw_queries.CREATE_INVESTIGATION, 'createInvestigation')
 
-STUDY_SUBSCRIPTION = gql(
-    """
-    subscription ($studyId: ID!) {
-        newSample (studyId: $studyId) {
-            study {
-                id
-                name
-                description
-                keywords
-                startDate
-                status
-                created
-                updated
-                permissions { user { id name email } level }
-                investigations { id name description type keywords startDatetime endDatetime created updated }
-                samples { id name url keywords created updated }
-            }
-            sample {
-                id
-                name
-                user { id name email }
-                keywords
-                parent { id }
-                created
-                updated
-                url
-            }
-            source
-        }
-    }
-    """
-)
-
-TOKENS = gql(
-    """
-    query {
-        tokens{
-            id
-            name
-        }
-    }
-    """
-)
-
-INVESTIGATION = gql(
-    """
-    query ($id: ID!) {
-        investigation(id: $id) {
-            id
-            name
-            description
-            type
-            user { id name email }
-            keywords
-            study {
-                id
-                name
-                description
-                keywords
-                startDate
-                status
-                created
-                updated
-                permissions { user { id name email } level }
-                investigations { id name description type keywords startDatetime endDatetime created updated }
-                samples { id name url keywords created updated }
-            }
-            startDatetime
-            endDatetime
-            created
-            updated
-        }
-    }
-    """
-)
-
-CREATE_INVESTIGATION = gql(
-    """
-    mutation createInvestigation($description: String!, $investigationType: String, $keywords: [String], $name: String!, $studyId: ID!) {
-        createInvestigation(description: $description, investigationType: $investigationType, keywords: $keywords, name: $name, studyId: $studyId) {
-            error
-            success
-            investigation {
-                id
-                name
-                description
-                type
-                user { id name email }
-                keywords
-                study {
-                    id
-                    name
-                    description
-                    keywords
-                    startDate
-                    status
-                    created
-                    updated
-                    permissions { user { id name email } level }
-                    investigations { id name description type keywords startDatetime endDatetime created updated }
-                    samples { id name url keywords created updated }
-                }
-                startDatetime
-                endDatetime
-                created
-                updated
-            }
-        }
-    }
-    """
-)
-
-CREATE_TOKEN = gql(
-    """
-    mutation ($name: String!) {
-        createToken(name: $name) {
-            success
-            error
-            token
-        }
-    }
-    """
-)
-
-DELETE_TOKEN = gql(
-    """
-    mutation ($tokenId: ID) {
-        deleteToken(tokenId: $tokenId) {
-            success
-            error
-        }
-    }
-    """
-)
-
-SET_PERMISSIONS = gql(
-    """
-    mutation ($permission: String, $studyId: ID, $userId: String) {
-        setPermissions(permission: $permission, studyId: $studyId, userId: $userId) {
-            success
-            error
-        }
-    }
-    """
-)
-
-REMOVE_PERMISSIONS = gql(
-    """
-    mutation ($studyId: ID, $userId: ID) {
-        removePermissions(studyId: $studyId, userId: $userId) {
-            success
-            error
-        }
-    }
-    """
-)
+# Subscription
+STUDY_SUBSCRIPTION = ADCQuery(raw_queries.STUDY_SUBSCRIPTION)
