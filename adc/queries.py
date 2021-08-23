@@ -143,7 +143,6 @@ TOKENS = gql(
         tokens{
             id
             name
-            token
         }
     }
     """
@@ -223,7 +222,7 @@ CREATE_TOKEN = gql(
         createToken(name: $name) {
             success
             error
-            token { id name token }
+            token
         }
     }
     """
