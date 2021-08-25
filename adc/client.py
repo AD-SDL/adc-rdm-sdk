@@ -10,8 +10,8 @@ class ADCClient:
 
     def __init__(self, token):
         self.token = token
-        self.http_url = "http://localhost/graphql/"
-        self.ws_url = "ws://localhost/graphql/"
+        self.http_url = "https://rdm-stage.discoverycloud.anl.gov/graphql/"
+        self.ws_url = "wss://rdm-stage.discoverycloud.anl.gov/graphql/"
         self.headers = {"authorization": f"JWT {token}"}
         self.client = Client(
             transport=AIOHTTPTransport(url=self.http_url, headers=self.headers)
