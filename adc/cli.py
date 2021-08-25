@@ -103,7 +103,7 @@ def create_sample(
     if not os.path.isfile(sample_file_path):
         typer.echo("Invalid sample file path", err=True)
     keywords = [] if not keywords else list(keywords)
-    with open(sample_file_path) as file:
+    with open(sample_file_path, 'rb') as file:
         client_method = 'create_sample'
         fetch_and_output_response(client_method, file, study_id, name, keywords, parent_id, source)
 
