@@ -76,13 +76,15 @@ class ADCClient:
             {"query": queries.CREATE_SAMPLE.raw_query, "variables": variables}
         )
         map = json.dumps({"0": ["variables.file"]})
-        response = requests.post(
+        raw_response = requests.post(
             self.http_url,
             data={"operations": operations, "map": map},
             files={"0": file},
             headers=self.headers,
         )
-        return json.loads(response.content)
+        response = json.loads(raw_response.content)['data'][queries.CREATE_SAMPLE.path]
+        self._check_for_errors(response)
+        return response
 
     def create_investigation(
         self, study_id, name, description, keywords=[], investigation_type=None

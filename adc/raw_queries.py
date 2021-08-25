@@ -75,7 +75,7 @@ CREATE_STUDY = """
 """
 
 CREATE_SAMPLE = """
-    mutation createSample($file: Upload!, $keywords: [String], $name: String!, $parentId: ID, $source: String, $studyId: ID!) {
+    mutation ($file: Upload!, $keywords: [String], $name: String!, $parentId: ID, $source: String, $studyId: ID!) {
         createSample(file: $file, keywords: $keywords, name: $name, parentId: $parentId, source: $source, studyId: $studyId) {
             success
             error
@@ -165,7 +165,7 @@ INVESTIGATION = """
 """
 
 CREATE_INVESTIGATION = """
-    mutation createInvestigation($description: String!, $investigationType: String, $keywords: [String], $name: String!, $studyId: ID!) {
+    mutation ($description: String!, $investigationType: String, $keywords: [String], $name: String!, $studyId: ID!) {
         createInvestigation(description: $description, investigationType: $investigationType, keywords: $keywords, name: $name, studyId: $studyId) {
             error
             success
