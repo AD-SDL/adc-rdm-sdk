@@ -1,4 +1,5 @@
 class ADCError(Exception):
 
     def __init__(self, error):
-        super().__init__(error)
+        self.error = error
+        super().__init__(self.error)
