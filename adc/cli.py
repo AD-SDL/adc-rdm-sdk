@@ -36,12 +36,15 @@ def get_client() -> ADCClient:
     token = get_token_from_env()
     return ADCClient(token)
 
+def print_to_stdout(content: dict):
+    typer.echo(json.dumps(content, indent=4))
+
 
 def fetch_and_output_response(client_method, *args):
     try:
         client = get_client()
         response = getattr(client, client_method)(*args)
-        typer.echo(json.dumps(response, indent=4))
+        print_to_stdout(response)
     except ADCError as e:
         typer.echo(e.error, err=True)
 
@@ -277,9 +280,8 @@ def subscribe_to_study(study_id):
     Notifications will be either for new Samples and Investigations under the specified Study.
     """
     client = get_client()
-    client.subscribe_to_study(
-        study_id, lambda notification: typer.echo(json.dumps(notification, indent=4))
-    )
+    for notification in client.subscribe_to_study(study_id):
+        print_to_stdout(notification)
 
 
 @app.command()
@@ -289,9 +291,8 @@ def subscribe_to_investigation(investigation_id):
     Notifications will be for Jobs created under the specified Study.
     """
     client = get_client()
-    client.subscribe_to_investigation(
-        investigation_id, lambda notification: typer.echo(json.dumps(notification, indent=4))
-    )
+    for notification in client.subscribe_to_investigation(investigation_id):
+        print_to_stdout(notification)
 
 
 @app.command()
@@ -301,6 +302,5 @@ def subscribe_to_job(job_id):
     Notifications will be for Job updates and new Datafiles added to the specified Job.
     """
     client = get_client()
-    client.subscribe_to_job(
-        job_id, lambda notification: typer.echo(json.dumps(notification, indent=4))
-    )
+    for notification in client.subscribe_to_job(job_id):
+        print_to_stdout(notification)
