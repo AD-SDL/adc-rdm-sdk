@@ -1,6 +1,7 @@
 import os
 import json
 import typer
+from datetime import datetime
 from adc.client import ADCClient
 from adc.exceptions import ADCError
 from typing import List
@@ -69,13 +70,31 @@ def investigation(investigation_id: str):
 
 
 @app.command()
+def job(job_id: str):
+    client_method = 'get_job'
+    fetch_and_output_response(client_method, job_id)
+
+
+@app.command()
+def datafile(datafile_id: str):
+    client_method = 'get_datafile'
+    fetch_and_output_response(client_method, datafile_id)
+
+
+@app.command()
+def sample(sample_id: str):
+    client_method = 'get_sample'
+    fetch_and_output_response(client_method, sample_id)
+
+
+@app.command()
 def create_token(name: str):
     client_method = 'create_token'
     fetch_and_output_response(client_method, name)
 
 
 @app.command()
-def delete_token(token_id):
+def delete_token(token_id: str):
     client_method = 'delete_token'
     fetch_and_output_response(client_method, token_id)
 
@@ -109,6 +128,21 @@ def create_sample(
 
 
 @app.command()
+def create_datafile(
+    file_path: str,
+    job_id: str,
+    name: str,
+    description: str = typer.Option(default=None),
+    source: str = typer.Option(default=None),
+):
+    if not os.path.isfile(file_path):
+        typer.echo("Invalid sample file path", err=True)
+    with open(file_path, 'rb') as file:
+        client_method = 'create_datafile'
+        fetch_and_output_response(client_method, name, job_id, file, description, source)
+
+
+@app.command()
 def create_investigation(
     study_id: str,
     name: str,
@@ -118,6 +152,44 @@ def create_investigation(
 ):
     client_method = 'create_investigation'
     fetch_and_output_response(client_method, study_id, name, description, keywords, investigation_type)
+
+
+@app.command()
+def create_job(
+    investigation_id: str,
+    sample_id: str,
+    start_datetime: datetime,
+    end_datetime: datetime = typer.Option(default=None),
+    status: str = typer.Option(default=None),
+    source: str = typer.Option(default=None)
+):
+    client_method = 'create_job'
+    fetch_and_output_response(
+        client_method,
+        investigation_id,
+        sample_id,
+        start_datetime,
+        end_datetime,
+        status,
+        source
+    )
+
+
+@app.command()
+def update_job(
+    job_id: str,
+    status: str,
+    end_datetime: datetime = typer.Option(default=None),
+    source: str = typer.Option(default=None)
+):
+    client_method = 'update_job'
+    fetch_and_output_response(
+        client_method,
+        job_id,
+        status,
+        end_datetime,
+        source
+    )
 
 
 @app.command()
@@ -137,4 +209,20 @@ def subscribe_to_study(study_id):
     client = get_client()
     client.subscribe_to_study(
         study_id, lambda notification: typer.echo(json.dumps(notification, indent=4))
+    )
+
+
+@app.command()
+def subscribe_to_investigation(investigation_id):
+    client = get_client()
+    client.subscribe_to_investigation(
+        investigation_id, lambda notification: typer.echo(json.dumps(notification, indent=4))
+    )
+
+
+@app.command()
+def subscribe_to_job(job_id):
+    client = get_client()
+    client.subscribe_to_job(
+        job_id, lambda notification: typer.echo(json.dumps(notification, indent=4))
     )
