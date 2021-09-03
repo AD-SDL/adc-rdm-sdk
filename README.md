@@ -14,21 +14,29 @@ poetry install
 
 ## Commands
 ```
-create-investigation
-create-sample
-create-study
-create-token
-current-user
-delete-token
-investigation
-remove-permissions
-set-permissions
-studies
-study
-subscribe-to-study
-tokens
+adc create-datafile
+adc create-investigation
+adc create-job
+adc create-sample
+adc create-study
+adc create-token
+adc current-user
+adc datafile
+adc delete-token
+adc investigation
+adc job
+adc remove-permissions
+adc sample
+adc set-permissions
+adc studies
+adc study
+adc subscribe-to-investigation
+adc subscribe-to-job
+adc subscribe-to-study
+adc tokens
+adc update-job
 ```
-You can run `adc` for more information.
+You can run `adc <command> --help` for more information.
 
 ## Development
 We are using [poetry](https://python-poetry.org/) to package this code.
