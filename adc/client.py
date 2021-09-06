@@ -132,7 +132,7 @@ class ADCClient:
 
     def create_sample(
         self, file: BinaryIO, study_id: str, name: str, keywords: list = None, parent_id: str = None, source: str = None
-    ):
+    ) -> dict:
         """
         Create a new sample.
         Arguments:
@@ -155,7 +155,7 @@ class ADCClient:
 
     def create_datafile(
         self, name: str, job_id: str, file: BinaryIO, description: str = None, source: str = None
-    ):
+    ) -> dict:
         """
         Create a new datafile.
         Arguments:
@@ -176,7 +176,7 @@ class ADCClient:
 
     def create_investigation(
         self, study_id: str, name: str, description: str, keywords: list = None, investigation_type: str = None
-    ):
+    ) -> dict:
         """
         Create a new investigation.
         Arguments:
@@ -195,7 +195,7 @@ class ADCClient:
         if investigation_type: variables["investigationType"] = investigation_type
         return self._execute(queries.CREATE_INVESTIGATION, variables)
 
-    def create_job(self, investigation_id: str, sample_id: str, start_datetime: datetime, end_datetime: datetime = None, status: str = None, source: str = None):
+    def create_job(self, investigation_id: str, sample_id: str, start_datetime: datetime, end_datetime: datetime = None, status: str = None, source: str = None) -> dict:
         """
         Create a new job.
         Arguments:
@@ -216,7 +216,7 @@ class ADCClient:
         if source: variables["source"] = source
         return self._execute(queries.CREATE_JOB, variables)
 
-    def update_job(self, job_id: str, status: str, end_datetime: datetime = None, source: str = None):
+    def update_job(self, job_id: str, status: str, end_datetime: datetime = None, source: str = None) -> dict:
         """
         Update an already existing job.
         Arguments:
@@ -233,7 +233,7 @@ class ADCClient:
         if source: variables["source"] = source
         return self._execute(queries.UPDATE_JOB, variables)
 
-    def set_permissions(self, study_id: str, user_id: str, permission_level: str):
+    def set_permissions(self, study_id: str, user_id: str, permission_level: str) -> dict:
         """
         Set user permissions over a study.
         Arguments:
@@ -248,7 +248,7 @@ class ADCClient:
         }
         return self._execute(queries.SET_PERMISSIONS, variables)
 
-    def remove_permissions(self, study_id: str, user_id: str):
+    def remove_permissions(self, study_id: str, user_id: str) -> dict:
         """
         Remove user permissions over a study.
         Arguments:
