@@ -17,6 +17,10 @@ def adc():
 
 
 def get_token_from_env():
+    """
+    Fetch and returns ADC_ACCESS_TOKEN env var.
+    Outputs error if it is not present.
+    """
     try:
         return os.environ["ADC_ACCESS_TOKEN"]
     except KeyError:
@@ -25,7 +29,10 @@ def get_token_from_env():
         raise typer.Exit()
 
 
-def get_client():
+def get_client() -> ADCClient:
+    """
+    Return an instance of ADCClient using the ADC_ACCESS_TOKEN env var.
+    """
     token = get_token_from_env()
     return ADCClient(token)
 
@@ -41,60 +48,90 @@ def fetch_and_output_response(client_method, *args):
 
 @app.command()
 def current_user():
+    """
+    Fetch current user's information.
+    """
     client_method = 'get_current_user'
     fetch_and_output_response(client_method)
 
 
 @app.command()
 def tokens():
+    """
+    List current user's available API tokens.
+    """
     client_method = 'get_tokens'
     fetch_and_output_response(client_method)
 
 
 @app.command()
 def studies():
+    """
+    List studies available to the current user.
+    """
     client_method = 'get_studies'
     fetch_and_output_response(client_method)
 
 
 @app.command()
 def study(study_id: str):
+    """
+    Get details of a specific study.
+    """
     client_method = 'get_study'
     fetch_and_output_response(client_method, study_id)
 
 
 @app.command()
 def investigation(investigation_id: str):
+    """
+    Get details of a specific investigation.
+    """
     client_method = 'get_investigation'
     fetch_and_output_response(client_method, investigation_id)
 
 
 @app.command()
 def job(job_id: str):
+    """
+    Get details of a specific job.
+    """
     client_method = 'get_job'
     fetch_and_output_response(client_method, job_id)
 
 
 @app.command()
 def datafile(datafile_id: str):
+    """
+    Get details of a specific datafile.
+    """
     client_method = 'get_datafile'
     fetch_and_output_response(client_method, datafile_id)
 
 
 @app.command()
 def sample(sample_id: str):
+    """
+    Get details of a specific sample.
+    """
     client_method = 'get_sample'
     fetch_and_output_response(client_method, sample_id)
 
 
 @app.command()
 def create_token(name: str):
+    """
+    Create a new token for the current user.
+    """
     client_method = 'create_token'
     fetch_and_output_response(client_method, name)
 
 
 @app.command()
 def delete_token(token_id: str):
+    """
+    Delete a specific token from the current user's available tokens.
+    """
     client_method = 'delete_token'
     fetch_and_output_response(client_method, token_id)
 
@@ -105,6 +142,9 @@ def create_study(
     description: str,
     keywords: List[str] = typer.Option(default=None),
 ):
+    """
+    Create a new Study, current user will be the owner and will have admin permissions.
+    """
     keywords = [] if not keywords else list(keywords)
     client_method = 'create_study'
     fetch_and_output_response(client_method, name, description, keywords)
@@ -119,6 +159,10 @@ def create_sample(
     parent_id: str = typer.Option(default=None),
     source: str = typer.Option(default=None),
 ):
+    """
+    Create a Sample under the specified Study to (possibly) be used as input for a Job to generate Datafiles.
+    Triggers notifications for Study subscriptors.
+    """
     if not os.path.isfile(sample_file_path):
         typer.echo("Invalid sample file path", err=True)
     keywords = [] if not keywords else list(keywords)
@@ -135,6 +179,10 @@ def create_datafile(
     description: str = typer.Option(default=None),
     source: str = typer.Option(default=None),
 ):
+    """
+    Create a Datafile that will be considered as a result file from the specified Job
+    Triggers notifications for Job subscriptors.
+    """
     if not os.path.isfile(file_path):
         typer.echo("Invalid sample file path", err=True)
     with open(file_path, 'rb') as file:
@@ -150,6 +198,10 @@ def create_investigation(
     keywords: List[str] = typer.Option(default=None),
     investigation_type: str = typer.Option(default=None),
 ):
+    """
+    Create an Investigation under the specified Study.
+    Triggers notifications for Study subscriptors.
+    """
     client_method = 'create_investigation'
     fetch_and_output_response(client_method, study_id, name, description, keywords, investigation_type)
 
@@ -163,6 +215,10 @@ def create_job(
     status: str = typer.Option(default=None),
     source: str = typer.Option(default=None)
 ):
+    """
+    Create a Job under the specified Investigation.
+    Triggers notifications for Investigation subscriptors.
+    """
     client_method = 'create_job'
     fetch_and_output_response(
         client_method,
@@ -182,6 +238,10 @@ def update_job(
     end_datetime: datetime = typer.Option(default=None),
     source: str = typer.Option(default=None)
 ):
+    """
+    Update an already existing Job.
+    Triggers notifications for Job subscriptors.
+    """
     client_method = 'update_job'
     fetch_and_output_response(
         client_method,
@@ -194,18 +254,28 @@ def update_job(
 
 @app.command()
 def set_permissions(study_id: str, user_id: str, permission_level: str):
+    """
+    Set permission level for the specified User over the specified Study.
+    """
     client_method = 'set_permissions'
     fetch_and_output_response(client_method, study_id, user_id, permission_level)
 
 
 @app.command()
 def remove_permissions(study_id: str, user_id: str):
+    """
+    Remove the specified User permissions over the specified Study.
+    """
     client_method = 'remove_permissions'
     fetch_and_output_response(client_method, study_id, user_id)
 
 
 @app.command()
 def subscribe_to_study(study_id):
+    """
+    Subscribe to the specified study and print notifications to stdout.
+    Notifications will be either for new Samples and Investigations under the specified Study.
+    """
     client = get_client()
     client.subscribe_to_study(
         study_id, lambda notification: typer.echo(json.dumps(notification, indent=4))
@@ -214,6 +284,10 @@ def subscribe_to_study(study_id):
 
 @app.command()
 def subscribe_to_investigation(investigation_id):
+    """
+    Subscribe to the specified Investigation and print notifications to stdout.
+    Notifications will be for Jobs created under the specified Study.
+    """
     client = get_client()
     client.subscribe_to_investigation(
         investigation_id, lambda notification: typer.echo(json.dumps(notification, indent=4))
@@ -222,6 +296,10 @@ def subscribe_to_investigation(investigation_id):
 
 @app.command()
 def subscribe_to_job(job_id):
+    """
+    Subscribe to the specified Job and print notifications to stdout.
+    Notifications will be for Job updates and new Datafiles added to the specified Job.
+    """
     client = get_client()
     client.subscribe_to_job(
         job_id, lambda notification: typer.echo(json.dumps(notification, indent=4))
