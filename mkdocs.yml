@@ -6,12 +6,11 @@ nav:
     - Home: index.md
     - Installation: installation.md
     - CLI:
-        - cli/tutorial.md
-        - cli/usage.md
+        - Quick start: cli/tutorial.md
+        - Command reference: cli/usage.md
     - SDK:
-        - 'Getting started': sdk/tutorial.md
-        - sdk/usage.md
-        - 'Code Reference': sdk/code_reference.md
+        - Getting started: sdk/tutorial.md
+        - Code reference: sdk/code_reference.md
 
 theme: 
   name: material

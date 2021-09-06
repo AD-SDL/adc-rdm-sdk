@@ -5,4 +5,3 @@
     :command: app
     :prog_name: adc
     :depth: 0
-
