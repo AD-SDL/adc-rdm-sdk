@@ -1,0 +1,25 @@
+site_name: Argonne Discovery Cloud SDK
+site_url: https://rdm-stage.discoverycloud.anl.gov/docs
+repo_url: https://github.com/AD-SDL/adc-rdm-sdk
+
+nav:
+    - Home: index.md
+    - Installation: installation.md
+    - CLI:
+        - cli/tutorial.md
+        - cli/usage.md
+    - SDK:
+        - 'Getting started': sdk/tutorial.md
+        - sdk/usage.md
+        - 'Code Reference': sdk/code_reference.md
+
+theme: 
+  name: material
+
+plugins:
+  - mkdocstrings
+  - search
+
+markdown_extensions:
+    - toc:
+        permalink: true
