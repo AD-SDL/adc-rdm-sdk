@@ -10,7 +10,7 @@ app = typer.Typer()
 
 
 @app.callback()
-def callback():
+def adc():
     """
     Argonne Discovery Cloud CLI
     """

@@ -21,5 +21,7 @@ plugins:
   - search
 
 markdown_extensions:
+    - mkdocs-typer
     - toc:
         permalink: true
+
