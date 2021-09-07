@@ -1,6 +1,7 @@
 site_name: Argonne Discovery Cloud SDK
 site_url: https://rdm-stage.discoverycloud.anl.gov/docs
 repo_url: https://github.com/AD-SDL/adc-rdm-sdk
+repo_name: AD-SDL/adc-rdm-sdk
 
 nav:
     - Home: index.md
@@ -14,6 +15,10 @@ nav:
 
 theme: 
   name: material
+  features:
+    - navigation.sections
+  icon:
+    repo: fontawesome/brands/github
 
 plugins:
   - mkdocstrings
