@@ -289,6 +289,7 @@ JOB_SUBSCRIPTION = """
                 status
                 investigation { id name description type keywords startDatetime endDatetime created updated user { id name email } }
                 sample { id name url user { id name email } keywords created updated }
+                datafiles { edges { node { id name url user { id name email } created } } }
                 created
                 updated
             }

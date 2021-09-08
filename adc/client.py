@@ -1,12 +1,22 @@
 from gql import Client
+from datetime import datetime
+from typing import BinaryIO, Callable
 from gql.transport.aiohttp import AIOHTTPTransport
 from gql.transport.websockets import WebsocketsTransport
 from adc import queries, exceptions
 
 
 class ADCClient:
+    """
+    Client class to use in order to interact with Argonne Discovery Cloud API.
+    """
 
-    def __init__(self, token):
+    def __init__(self, token: str):
+        """
+        Create an ADCClient instance to interact with the API.
+        Arguments:
+            token: API Access Token
+        """
         self.token = token
         self.http_url = "https://rdm-stage.discoverycloud.anl.gov/graphql/"
         self.ws_url = "wss://rdm-stage.discoverycloud.anl.gov/graphql/"
@@ -24,54 +34,115 @@ class ADCClient:
         self._check_for_errors(response)
         return response
 
-    def get_tokens(self):
+    def get_tokens(self) -> dict:
+        """
+        Retrieve the current user's tokens.
+        """
         return self._execute(queries.TOKENS)
 
-    def get_studies(self):
+    def get_studies(self) -> dict:
+        """
+        Retrieve studies the current user has permission over.
+        """
         return self._execute(queries.STUDIES)
 
-    def get_study(self, study_id):
+    def get_study(self, study_id: str) -> dict:
+        """
+        Retrieve a specific study.
+        Arguments:
+            study_id: Study ID
+        """
         variables = {"id": study_id}
         return self._execute(queries.STUDY, variables)
 
-    def get_sample(self, sample_id):
+    def get_sample(self, sample_id: str) -> dict:
+        """
+        Retrieve a specific sample.
+        Arguments:
+            sample_id: Sample ID
+        """
         variables = {"id": sample_id}
         return self._execute(queries.SAMPLE, variables)
 
-    def get_datafile(self, datafile_id):
+    def get_datafile(self, datafile_id: str) -> dict:
+        """
+        Retrieve a specific datafile.
+        Arguments:
+            datafile_id: Datafile ID
+        """
         variables = {"id": datafile_id}
         return self._execute(queries.DATAFILE, variables)
 
-    def get_job(self, job_id):
+    def get_job(self, job_id: str) -> dict:
+        """
+        Retrieve a specific job.
+        Arguments:
+            job_id: Job ID
+        """
         variables = {"id": job_id}
         return self._execute(queries.JOB, variables)
 
-    def get_current_user(self):
+    def get_current_user(self) -> dict:
+        """
+        Retrieve the currently authenticated user.
+        """
         return self._execute(queries.CURRENT_USER)
 
-    def get_investigation(self, investigation_id):
+    def get_investigation(self, investigation_id: str) -> dict:
+        """
+        Retrieve a specific investigation.
+        Arguments:
+            investigation_id: Investigation ID
+        """
         variables = {"id": investigation_id}
         return self._execute(queries.INVESTIGATION, variables)
 
-    def create_token(self, name):
+    def create_token(self, name: str) -> dict:
+        """
+        Create a new access token for the currently logged user.
+        Arguments:
+            name: Desired token name
+        """
         variables = {"name": name}
         return self._execute(queries.CREATE_TOKEN, variables)
 
-    def delete_token(self, token_id):
+    def delete_token(self, token_id: str) -> dict:
+        """
+        Delete a specific access token for the current user.
+        Arguments:
+            token_id: ID of the token that will be deleted
+        """
         variables = {"tokenId": token_id}
         return self._execute(queries.DELETE_TOKEN, variables)
 
-    def create_study(self, name, description, keywords=[]):
+    def create_study(self, name: str, description: str, keywords: list = None) -> dict:
+        """
+        Create a new study.
+        Arguments:
+            name: study name
+            description: study description
+            keywords: study keywords
+        """
         variables = {
             "description": description,
-            "keywords": keywords,
+            "keywords": keywords if keywords else [],
             "name": name,
         }
         return self._execute(queries.CREATE_STUDY, variables)
 
     def create_sample(
-        self, file, study_id, name, keywords=None, parent_id=None, source=None
-    ):
+        self, file: BinaryIO, study_id: str, name: str, keywords: list = None, parent_id: str = None, source: str = None
+    ) -> dict:
+        """
+        Create a new sample.
+        Arguments:
+            file: sample file, opened as binary (i.e. with 'rb')
+            study_id: study id
+            name: sample name
+            keywords: sample keywords
+            parent_id: id of parent sample
+            source: custom additional string value
+        """
         variables = {
             "file": file,
             "studyId": study_id,
@@ -83,8 +154,17 @@ class ADCClient:
         return self._execute(queries.CREATE_SAMPLE, variables, file_upload=True)
 
     def create_datafile(
-        self, name, job_id, file, description=None, source=None
-    ):
+        self, name: str, job_id: str, file: BinaryIO, description: str = None, source: str = None
+    ) -> dict:
+        """
+        Create a new datafile.
+        Arguments:
+            file: actual file, opened as binary (i.e. with 'rb')
+            job_id: job id
+            name: sample name
+            description: datafile description
+            source: custom additional string value
+        """
         variables = {
             "file": file,
             "jobId": job_id,
@@ -95,18 +175,37 @@ class ADCClient:
         return self._execute(queries.CREATE_DATAFILE, variables, file_upload=True)
 
     def create_investigation(
-        self, study_id, name, description, keywords=[], investigation_type=None
-    ):
+        self, study_id: str, name: str, description: str, keywords: list = None, investigation_type: str = None
+    ) -> dict:
+        """
+        Create a new investigation.
+        Arguments:
+            study_id: study id
+            name: investigation name
+            description: investigation description
+            keywords: investigation keywords
+            investigation_type: available values are ['experiment', 'simulation', 'observation', 'measurement']
+        """
         variables = {
             "studyId": study_id,
             "name": name,
             "description": description,
-            "keywords": keywords,
+            "keywords": keywords if keywords else [],
         }
         if investigation_type: variables["investigationType"] = investigation_type
         return self._execute(queries.CREATE_INVESTIGATION, variables)
 
-    def create_job(self, investigation_id, sample_id, start_datetime, end_datetime=None, status=None, source=None):
+    def create_job(self, investigation_id: str, sample_id: str, start_datetime: datetime, end_datetime: datetime = None, status: str = None, source: str = None) -> dict:
+        """
+        Create a new job.
+        Arguments:
+            investigation_id: investigation id
+            sample_id: id of sample to be used as job input
+            start_datetime: job start datetime
+            end_datetime: job end datetime
+            status: available values are ['completed', 'cancelled', 'running']
+            source: custom additional string value
+        """
         variables = {
             "investigationId": investigation_id,
             "sampleId": sample_id,
@@ -117,7 +216,15 @@ class ADCClient:
         if source: variables["source"] = source
         return self._execute(queries.CREATE_JOB, variables)
 
-    def update_job(self, job_id, status, end_datetime=None, source=None):
+    def update_job(self, job_id: str, status: str, end_datetime: datetime = None, source: str = None) -> dict:
+        """
+        Update an already existing job.
+        Arguments:
+            job_id: job id
+            end_datetime: job end datetime
+            status: available values are ['completed', 'cancelled', 'running']
+            source: custom additional string value
+        """
         variables = {
             "jobId": job_id,
             "status": status,
@@ -126,7 +233,14 @@ class ADCClient:
         if source: variables["source"] = source
         return self._execute(queries.UPDATE_JOB, variables)
 
-    def set_permissions(self, study_id, user_id, permission_level):
+    def set_permissions(self, study_id: str, user_id: str, permission_level: str) -> dict:
+        """
+        Set user permissions over a study.
+        Arguments:
+            study_id: study id
+            user_id: id of the user we want to add / modify permissions over a study
+            permission_level: available values are ['read', 'write', 'access']
+        """
         variables = {
             "studyId": study_id,
             "userId": user_id,
@@ -134,25 +248,49 @@ class ADCClient:
         }
         return self._execute(queries.SET_PERMISSIONS, variables)
 
-    def remove_permissions(self, study_id, user_id):
+    def remove_permissions(self, study_id: str, user_id: str) -> dict:
+        """
+        Remove user permissions over a study.
+        Arguments:
+            study_id: study id
+            user_id: id of the user we want remove from a study
+        """
         variables = {"studyId": study_id, "userId": user_id}
         return self._execute(queries.REMOVE_PERMISSIONS, variables)
 
-    def subscribe_to_study(self, study_id, callback):
+    def subscribe_to_study(self, study_id: str, callback: Callable):
+        """
+        Subscribe to a study to get notifications when a new sample is added or an investigation is created.
+        Arguments:
+            study_id: study id
+            callback: function to be executed for each notification, takes in 1 parameter
+        """
         variables = {"studyId": study_id}
         for result in self.ws_client.subscribe(
             queries.STUDY_SUBSCRIPTION.query, variable_values=variables
         ):
             callback(result)
 
-    def subscribe_to_investigation(self, investigation_id, callback):
+    def subscribe_to_investigation(self, investigation_id: str, callback: Callable):
+        """
+        Subscribe to an investigation to get notifications when a new job is created.
+        Arguments:
+            investigation_id: investigation id
+            callback: function to be executed for each notification, takes in 1 parameter
+        """
         variables = {"investigationId": investigation_id}
         for result in self.ws_client.subscribe(
                 queries.INVESTIGATION_SUBSCRIPTION.query, variable_values=variables
         ):
             callback(result)
 
-    def subscribe_to_job(self, job_id, callback):
+    def subscribe_to_job(self, job_id: str, callback: Callable):
+        """
+        Subscribe to a job to get notifications when a new datafile is created.
+        Arguments:
+            job_id: job id
+            callback: function to be executed for each notification, takes in 1 parameter
+        """
         variables = {"jobId": job_id}
         for result in self.ws_client.subscribe(
                 queries.JOB_SUBSCRIPTION.query, variable_values=variables
