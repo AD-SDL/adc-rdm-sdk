@@ -1,0 +1,33 @@
+version: 0.2
+env:
+  secrets-manager:
+    KUBERNETES_SERVER: stage/KubernetesClusterConnection:KUBERNETES_SERVER
+    KUBERNETES_TOKEN: stage/KubernetesClusterConnection:KUBERNETES_TOKEN
+phases: 
+  pre_build: 
+    commands: 
+    - echo Logging in to Amazon ECR.... 
+    - aws --version
+    # update the following line with your own region
+    - aws ecr get-login-password --region us-gov-east-1 | docker login --username AWS --password-stdin 060368459872.dkr.ecr.us-gov-east-1.amazonaws.com
+    - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+  build: 
+    commands: 
+    - echo Build started on `date` 
+    - echo Building the Docker image... 
+    # update the following line with the name of your own ECR repository
+    - docker build -t adc-sdk-docs .
+    # update the following line with the URI of your own ECR repository (view the Push Commands in the console)
+    - docker tag adc-sdk-docs 060368459872.dkr.ecr.us-gov-east-1.amazonaws.com/argonne-adc-sdk_docs:$COMMIT_HASH
+  post_build:    
+    commands: 
+    - echo Build completed on `date` 
+    - echo pushing to repo
+    # update the following line with the URI of your own ECR repository
+    - docker push 060368459872.dkr.ecr.us-gov-east-1.amazonaws.com/argonne-adc-sdk_docs:$COMMIT_HASH
+    # deployment steps
+    - apt-get update
+    - apt-get -y install gettext-base
+    - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+    - chmod u+x ./kubectl
+    - ./scripts/ci-deploy.sh
