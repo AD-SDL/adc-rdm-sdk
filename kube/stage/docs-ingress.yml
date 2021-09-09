@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   generation: 4
-  name: lb-sdk-docs
+  name: lb-docs-sdk
   namespace: rdm-fe
 spec:
   rules:
@@ -13,6 +13,6 @@ spec:
         path: "/docs/sdk"
         backend:
           service:
-            name: sdk-docs
+            name: docs-sdk
             port: 
               number: 80
