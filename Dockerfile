@@ -4,6 +4,7 @@ WORKDIR /app
 COPY . ./
 
 RUN pip install mkdocs mkdocs-material mkdocs-typer mkdocstrings
+RUN pip install .
 RUN mkdocs build
 
 FROM nginx:alpine
