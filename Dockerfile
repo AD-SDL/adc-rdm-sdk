@@ -3,7 +3,7 @@ FROM python:3 as build
 WORKDIR /app
 COPY . ./
 
-RUN pip install mkdocs mkdocs-material
+RUN pip install mkdocs mkdocs-material mkdocs-typer mkdocstrings
 RUN mkdocs build
 
 FROM nginx:alpine
