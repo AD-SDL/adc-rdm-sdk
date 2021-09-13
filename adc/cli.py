@@ -148,7 +148,7 @@ def create_study(
     """
     Create a new Study, current user will be the owner and will have admin permissions.
     """
-    keywords = [] if not keywords else list(keywords)
+    keywords = [] if not keywords else [k for k in keywords[0].split(' ')]
     client_method = 'create_study'
     fetch_and_output_response(client_method, name, description, keywords)
 
@@ -168,7 +168,7 @@ def create_sample(
     """
     if not os.path.isfile(sample_file_path):
         typer.echo("Invalid sample file path", err=True)
-    keywords = [] if not keywords else list(keywords)
+    keywords = [] if not keywords else [k for k in keywords[0].split(' ')]
     with open(sample_file_path, 'rb') as file:
         client_method = 'create_sample'
         fetch_and_output_response(client_method, file, study_id, name, keywords, parent_id, source)
@@ -206,6 +206,7 @@ def create_investigation(
     Triggers notifications for Study subscriptors.
     """
     client_method = 'create_investigation'
+    keywords = [] if not keywords else [k for k in keywords[0].split(' ')]
     fetch_and_output_response(client_method, study_id, name, description, keywords, investigation_type)
 
 
