@@ -1,9 +1,10 @@
 from gql import Client
 from datetime import datetime
-from typing import BinaryIO, Callable
+from typing import BinaryIO
 from gql.transport.aiohttp import AIOHTTPTransport
 from gql.transport.websockets import WebsocketsTransport
 from adc import queries, exceptions
+from typing import Iterator
 
 
 class ADCClient:
@@ -258,44 +259,41 @@ class ADCClient:
         variables = {"studyId": study_id, "userId": user_id}
         return self._execute(queries.REMOVE_PERMISSIONS, variables)
 
-    def subscribe_to_study(self, study_id: str, callback: Callable):
+    def subscribe_to_study(self, study_id: str) -> Iterator[dict]:
         """
         Subscribe to a study to get notifications when a new sample is added or an investigation is created.
         Arguments:
             study_id: study id
-            callback: function to be executed for each notification, takes in 1 parameter
         """
         variables = {"studyId": study_id}
         for result in self.ws_client.subscribe(
             queries.STUDY_SUBSCRIPTION.query, variable_values=variables
         ):
-            callback(result)
+            yield result
 
-    def subscribe_to_investigation(self, investigation_id: str, callback: Callable):
+    def subscribe_to_investigation(self, investigation_id: str) -> Iterator[dict]:
         """
         Subscribe to an investigation to get notifications when a new job is created.
         Arguments:
             investigation_id: investigation id
-            callback: function to be executed for each notification, takes in 1 parameter
         """
         variables = {"investigationId": investigation_id}
         for result in self.ws_client.subscribe(
                 queries.INVESTIGATION_SUBSCRIPTION.query, variable_values=variables
         ):
-            callback(result)
+            yield result
 
-    def subscribe_to_job(self, job_id: str, callback: Callable):
+    def subscribe_to_job(self, job_id: str) -> Iterator[dict]:
         """
         Subscribe to a job to get notifications when a new datafile is created.
         Arguments:
             job_id: job id
-            callback: function to be executed for each notification, takes in 1 parameter
         """
         variables = {"jobId": job_id}
         for result in self.ws_client.subscribe(
                 queries.JOB_SUBSCRIPTION.query, variable_values=variables
         ):
-            callback(result)
+            yield result
 
     @staticmethod
     def _check_for_errors(response):
