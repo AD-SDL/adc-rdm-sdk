@@ -8,6 +8,5 @@ If a supported version of Python is not already installed on your system, see th
 
 Assuming you have python installed on your system all you need to start using the command-line utilities is to have this package installed:
 ```
-git clone https://github.com/AD-SDL/adc-rdm-sdk.git
-pip install .
+pip install adc-sdk
 ```
