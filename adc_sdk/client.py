@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import BinaryIO
 from gql.transport.aiohttp import AIOHTTPTransport
 from gql.transport.websockets import WebsocketsTransport
-from adc import queries, exceptions
+from adc_sdk import queries, exceptions
 from typing import Iterator
 
 

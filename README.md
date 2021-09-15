@@ -42,3 +42,6 @@ You can run `adc <command> --help` for more information.
 We are using [poetry](https://python-poetry.org/) to package this code.
 
 Use `poetry add <package name>` to add new dependencies to the repo.
+
+## License
+This project is licensed under the Apache License - see the [LICENSE](LICENSE) file for details

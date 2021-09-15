@@ -1,12 +1,13 @@
 [tool.poetry]
-name = "adc"
+name = "adc-sdk"
 version = "0.1.0"
 description = "Argonne Discovery Cloud SDK and CLI"
-authors = ["Dom & Tom <hello@domandtom.com>"]
+authors = ["Argonne National Laboratory <discovery@anl.gov>"]
 readme = "README.md"
+license = "LICENSE"
 
 [tool.poetry.scripts]
-adc = "adc.cli:app"
+adc = "adc_sdk.cli:app"
 
 [tool.poetry.dependencies]
 python = "^3.7"

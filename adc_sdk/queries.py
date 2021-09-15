@@ -1,5 +1,5 @@
 from gql import gql
-from adc import raw_queries
+from adc_sdk import raw_queries
 
 
 class ADCQuery:

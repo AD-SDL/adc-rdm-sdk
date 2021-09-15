@@ -2,9 +2,9 @@
 
 ## Meet `adc.client.ADCClient`
 
-The `ADCClient` will be pretty much all you need from adc in order to interact with Argonne Discovery Cloud API.
+The `ADCClient` will be pretty much all you need from `adc-sdk` in order to interact with Argonne Discovery Cloud API.
 ```
-from adc.client import ADCClient
+from adc_sdk.client import ADCClient
 
 ADC_ACCESS_TOKEN = "<your API Access Token>"
 client = ADCClient(ADC_ACCESS_TOKEN)

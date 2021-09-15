@@ -2,8 +2,8 @@ import os
 import json
 import typer
 from datetime import datetime
-from adc.client import ADCClient
-from adc.exceptions import ADCError
+from adc_sdk.client import ADCClient
+from adc_sdk.exceptions import ADCError
 from typing import List
 
 app = typer.Typer()

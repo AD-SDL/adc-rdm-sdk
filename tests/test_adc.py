@@ -1,4 +1,4 @@
-from adc import __version__
+from adc_sdk import __version__
 
 
 def test_version():
