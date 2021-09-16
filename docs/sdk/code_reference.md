@@ -1,6 +1,6 @@
 # client.py
 
-::: adc.client.ADCClient
+::: adc_sdk.client.ADCClient
     handler: python
     selection:
       members:
