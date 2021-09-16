@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  generation: 4
+  name: lb-docs-sdk
+  namespace: rdm-fe
+spec:
+  rules:
+  - host: dev.discoverycloud.anl.gov
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/docs/sdk"
+        backend:
+          service:
+            name: docs-sdk
+            port: 
+              number: 80
