@@ -1,8 +1,8 @@
 version: 0.2
 env:
   secrets-manager:
-    KUBERNETES_SERVER: stage/KubernetesClusterConnection:KUBERNETES_SERVER
-    KUBERNETES_TOKEN: stage/KubernetesClusterConnection:KUBERNETES_TOKEN
+    STAGE_KUBERNETES_SERVER: stage/KubernetesClusterConnection:KUBERNETES_SERVER
+    STAGE_KUBERNETES_TOKEN: stage/KubernetesClusterConnection:KUBERNETES_TOKEN
 phases: 
   pre_build: 
     commands: 
