@@ -65,9 +65,6 @@ CREATE_STUDY = """
                 status
                 created
                 updated
-                permissions { edges { node { user { id name email } level } } }
-                investigations { edges { node { id name description type keywords startDatetime endDatetime created updated } } }
-                samples { edges { node { id name url keywords created updated } } }
             }
         }
     }
@@ -166,19 +163,7 @@ CREATE_INVESTIGATION = """
                 type
                 user { id name email }
                 keywords
-                study {
-                    id
-                    name
-                    description
-                    keywords
-                    startDate
-                    status
-                    created
-                    updated
-                    permissions { edges { node { user { id name email } level } } }
-                    investigations { edges { node { id name description type keywords startDatetime endDatetime created updated } } }
-                    samples { edges { node { id name url keywords created updated } } }
-                }
+                study { id name description keywords startDate status created updated }
                 startDatetime
                 endDatetime
                 created
