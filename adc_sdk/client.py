@@ -1,4 +1,5 @@
 from gql import Client
+from gql.transport.exceptions import TransportQueryError
 from datetime import datetime
 from typing import BinaryIO
 from gql.transport.aiohttp import AIOHTTPTransport
@@ -30,7 +31,10 @@ class ADCClient:
         )
 
     def _execute(self, query_cls, variables=None, file_upload=False):
-        raw_response = self.client.execute(query_cls.query, variable_values=variables, upload_files=file_upload)
+        try:
+            raw_response = self.client.execute(query_cls.query, variable_values=variables, upload_files=file_upload)
+        except TransportQueryError as e:
+            raise exceptions.ADCError(e.errors[0]['message'])
         response = raw_response[query_cls.path] if query_cls.path else raw_response
         self._check_for_errors(response)
         return response
