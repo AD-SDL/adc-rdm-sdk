@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "adc-sdk"
-version = "0.1.1"
+version = "0.1.2"
 description = "Argonne Discovery Cloud SDK and CLI"
 authors = ["Argonne National Laboratory <discovery@anl.gov>"]
 readme = "README.md"

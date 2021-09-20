@@ -36,6 +36,7 @@ def get_client() -> ADCClient:
     token = get_token_from_env()
     return ADCClient(token)
 
+
 def print_to_stdout(content: dict):
     typer.echo(json.dumps(content, indent=4))
 
