@@ -56,7 +56,6 @@ CREATE_STUDY = """
     mutation ($description: String, $keywords: [String], $name: String) {
         createStudy(description: $description, keywords: $keywords, name: $name) {
             success
-            error
             study {
                 id
                 name
@@ -66,9 +65,6 @@ CREATE_STUDY = """
                 status
                 created
                 updated
-                permissions { edges { node { user { id name email } level } } }
-                investigations { edges { node { id name description type keywords startDatetime endDatetime created updated } } }
-                samples { edges { node { id name url keywords created updated } } }
             }
         }
     }
@@ -78,7 +74,6 @@ CREATE_SAMPLE = """
     mutation ($file: Upload!, $keywords: [String], $name: String!, $parentId: ID, $source: String, $studyId: ID!) {
         createSample(file: $file, keywords: $keywords, name: $name, parentId: $parentId, source: $source, studyId: $studyId) {
             success
-            error
             sample {
                 id
                 name
@@ -160,7 +155,6 @@ INVESTIGATION = """
 CREATE_INVESTIGATION = """
     mutation ($description: String!, $investigationType: String, $keywords: [String], $name: String!, $studyId: ID!) {
         createInvestigation(description: $description, investigationType: $investigationType, keywords: $keywords, name: $name, studyId: $studyId) {
-            error
             success
             investigation {
                 id
@@ -169,19 +163,7 @@ CREATE_INVESTIGATION = """
                 type
                 user { id name email }
                 keywords
-                study {
-                    id
-                    name
-                    description
-                    keywords
-                    startDate
-                    status
-                    created
-                    updated
-                    permissions { edges { node { user { id name email } level } } }
-                    investigations { edges { node { id name description type keywords startDatetime endDatetime created updated } } }
-                    samples { edges { node { id name url keywords created updated } } }
-                }
+                study { id name description keywords startDate status created updated }
                 startDatetime
                 endDatetime
                 created
@@ -195,7 +177,6 @@ DELETE_TOKEN = """
     mutation ($tokenId: ID) {
         deleteToken(tokenId: $tokenId) {
             success
-            error
         }
     }
 """
@@ -204,7 +185,6 @@ SET_PERMISSIONS = """
     mutation ($permission: String, $studyId: ID, $userId: String) {
         setPermissions(permission: $permission, studyId: $studyId, userId: $userId) {
             success
-            error
         }
     }
 """
@@ -213,7 +193,6 @@ REMOVE_PERMISSIONS = """
     mutation ($studyId: ID, $userId: ID) {
         removePermissions(studyId: $studyId, userId: $userId) {
             success
-            error
         }
     }
 """
@@ -222,7 +201,6 @@ CREATE_TOKEN = """
     mutation ($name: String!) {
         createToken(name: $name){
             success
-            error
             token
         }
     }
@@ -232,7 +210,6 @@ CREATE_JOB = """
     mutation ($investigationId: ID!, $sampleId: ID!, $startDatetime: DateTime!, $endDatetime: DateTime, $status: String, $source: String) {
         createJob(investigationId: $investigationId, sampleId: $sampleId, startDatetime: $startDatetime, endDatetime: $endDatetime, status: $status, source: $source) {
             success
-            error
             job {
                 id
                 endDatetime
@@ -251,7 +228,6 @@ CREATE_DATAFILE = """
     mutation($name: String!, $jobId: ID!, $description: String, $file: Upload!, $source: String) {
         createDatafile(name: $name, jobId: $jobId, description: $description, file: $file, source: $source) {
             success
-            error
             datafile {
               id
               name
@@ -267,7 +243,6 @@ UPDATE_JOB = """
     mutation ($jobId: ID!, $status: String!, $endDatetime: DateTime, $source: String){
         updateJob(jobId: $jobId, status: $status, endDatetime: $endDatetime, source: $source) {
             success
-            error
             job {
                 id
                 startDatetime,

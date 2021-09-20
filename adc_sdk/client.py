@@ -31,13 +31,14 @@ class ADCClient:
         )
 
     def _execute(self, query_cls, variables=None, file_upload=False):
+        """
+        Run query and return response's relevant content.
+        """
         try:
-            raw_response = self.client.execute(query_cls.query, variable_values=variables, upload_files=file_upload)
+            response = self.client.execute(query_cls.query, variable_values=variables, upload_files=file_upload)
         except TransportQueryError as e:
             raise exceptions.ADCError(e.errors[0]['message'])
-        response = raw_response[query_cls.path] if query_cls.path else raw_response
-        self._check_for_errors(response)
-        return response
+        return response[query_cls.path] if query_cls.path else response
 
     def get_tokens(self) -> dict:
         """
@@ -298,10 +299,3 @@ class ADCClient:
                 queries.JOB_SUBSCRIPTION.query, variable_values=variables
         ):
             yield result
-
-    @staticmethod
-    def _check_for_errors(response):
-        if "error" in response and response["error"]:
-            raise exceptions.ADCError(response["error"])
-        if "errors" in response:
-            raise exceptions.ADCError(response["errors"][0]["message"])
