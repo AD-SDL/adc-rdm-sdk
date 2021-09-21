@@ -16,6 +16,7 @@ gql = "3.0.0a6"
 aiohttp = "^3.7.4"
 websockets = "^9.1"
 requests = "^2.26.0"
+pydantic = {extras = ["dotenv", "email"], version = "^1.8.2"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
