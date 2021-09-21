@@ -7,6 +7,8 @@ from gql.transport.websockets import WebsocketsTransport
 from adc_sdk import queries, exceptions
 from typing import Iterator
 
+from adc_sdk.models import User
+
 
 class ADCClient:
     """
@@ -88,11 +90,12 @@ class ADCClient:
         variables = {"id": job_id}
         return self._execute(queries.JOB, variables)
 
-    def get_current_user(self) -> dict:
+    def get_current_user(self) -> User:
         """
         Retrieve the currently authenticated user.
         """
-        return self._execute(queries.CURRENT_USER)
+        response = self._execute(queries.CURRENT_USER)
+        return User.parse_obj(response['me'])
 
     def get_investigation(self, investigation_id: str) -> dict:
         """
