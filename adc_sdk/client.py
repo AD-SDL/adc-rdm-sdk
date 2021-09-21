@@ -7,7 +7,7 @@ from gql.transport.websockets import WebsocketsTransport
 from adc_sdk import queries, exceptions
 from typing import Iterator
 
-from adc_sdk.models import User
+from adc_sdk.models import User, Sample
 
 
 class ADCClient:
@@ -63,14 +63,15 @@ class ADCClient:
         variables = {"id": study_id}
         return self._execute(queries.STUDY, variables)
 
-    def get_sample(self, sample_id: str) -> dict:
+    def get_sample(self, sample_id: str) -> Sample:
         """
         Retrieve a specific sample.
         Arguments:
             sample_id: Sample ID
         """
         variables = {"id": sample_id}
-        return self._execute(queries.SAMPLE, variables)
+        response = self._execute(queries.SAMPLE, variables)
+        return Sample.parse_obj(response['sample'])
 
     def get_datafile(self, datafile_id: str) -> dict:
         """

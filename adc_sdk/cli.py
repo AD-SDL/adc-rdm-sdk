@@ -42,7 +42,7 @@ def get_client() -> ADCClient:
 
 def print_to_stdout(content: Union[dict, BaseModel]):
     if isinstance(content, BaseModel):
-        typer.echo(content.json(indent=4))
+        typer.echo(content.json(indent=4, exclude_unset=True))
     else:
         typer.echo(json.dumps(content, indent=4))
 
