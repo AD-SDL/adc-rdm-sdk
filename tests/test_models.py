@@ -1,6 +1,6 @@
 import json
 
-from adc_sdk.models import User, Sample
+from adc_sdk.models import User, Sample, Study
 
 
 def test_user(example_dir):
@@ -15,3 +15,11 @@ def test_sample(example_dir):
     sample = Sample.parse_obj(sample_reply['sample'])
     assert sample.name == '000286e59a'
     assert sample.get_file() == '200 OK'
+
+
+def test_study(example_dir):
+    reply = json.loads(example_dir.joinpath('study.json').read_text())
+    obj = Study.parse_response(reply['study'])
+    assert obj.name == 'polybot-ai-test'
+    assert obj.permissions[0].user.id == 'VXNlcjo1'
+    assert len(obj.samples) == 2

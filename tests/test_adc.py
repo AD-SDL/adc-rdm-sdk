@@ -39,3 +39,9 @@ def test_get_sample(client, example_dir, mocker):
     _mock_response(mocker, example_dir, 'sample.json')
     sample = client.get_sample('fake')
     assert sample.name == "000286e59a"
+
+
+def test_get_study(client, example_dir, mocker):
+    _mock_response(mocker, example_dir, 'study.json')
+    study = client.get_study('fake')
+    assert study.name == "polybot-ai-test"
