@@ -33,14 +33,16 @@ class Sample(BaseModel):
     created: datetime = Field(..., help='Date at which this sample was created')
     user: Optional[User] = Field(None, help='User who created this sample')
 
-    def get_file(self) -> str:
+    def get_file(self, **kwargs) -> str:
         """Access the file associated with this sample
+
+        Keyword arguments are passed to requests.get
 
         Returns:
             The file content as a string
         """
 
-        return requests.get(self.url).text
+        return requests.get(self.url, **kwargs).text
 
 
 class Permission(BaseModel):
@@ -70,15 +72,14 @@ class Study(BaseModel):
     investigations: List[dict] = Field(default_factory=list, help='List of investigations this study is part of')
     samples: List[Sample] = Field(default_factory=list, help='List of samples associated with this study')
 
-    # TODO (wardlt): I'm presuming "edge/node" syntax is not meaningful to most users, so will strip it out
     @classmethod
     def parse_response(cls, response: dict) -> 'Study':
         """Construct record using the response from the ADC
 
-        Removes
+        Removes the "edge" and "node" syntax, which is not needed by SDK users.
 
         Args:
-            response: Response from the GraphQL service
+            response: Response from the ADC service
         Returns:
             Representation of that response content
         """
@@ -91,3 +92,35 @@ class Study(BaseModel):
             response[tag] = [dtype.parse_obj(x) for x in _remove_edgenode_syntax(response[tag])]
 
         return cls.parse_obj(response)
+
+
+class StudySubscriptionEvent(BaseModel):
+    """Information provided when subscribing to a Study.
+
+    Contains study information, the sample that was added, and the associated investigation.
+    """
+
+    study: Study = Field(..., help='Study from which the event originated')
+    investigation: Optional[Investigation] = Field(None, help='Associated investigation')
+    sample: Sample = Field(..., help='Sample that triggered this event.')
+    source: Optional[str] = Field(..., help='Source of event. Format TBD')
+
+    @classmethod
+    def parse_event(cls, event: dict) -> 'StudySubscriptionEvent':
+        """Parse the event record from ADC
+
+        Removes the "edge" and "node" syntax, which is not needed by SDK users.
+
+        Args:
+            event: Raw event details from the ADC service
+        Returns:
+            Representation of the event details
+        """
+
+        # We are going to change some of the details
+        event = event.copy()
+
+        # Parse the study
+        event['study'] = Study.parse_response(event['study'])
+
+        return cls.parse_obj(event)

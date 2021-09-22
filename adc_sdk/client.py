@@ -7,7 +7,7 @@ from gql.transport.websockets import WebsocketsTransport
 from adc_sdk import queries, exceptions
 from typing import Iterator
 
-from adc_sdk.models import User, Sample, Study
+from adc_sdk.models import User, Sample, Study, StudySubscriptionEvent
 
 
 class ADCClient:
@@ -269,7 +269,7 @@ class ADCClient:
         variables = {"studyId": study_id, "userId": user_id}
         return self._execute(queries.REMOVE_PERMISSIONS, variables)
 
-    def subscribe_to_study(self, study_id: str) -> Iterator[dict]:
+    def subscribe_to_study(self, study_id: str) -> Iterator[StudySubscriptionEvent]:
         """
         Subscribe to a study to get notifications when a new sample is added or an investigation is created.
         Arguments:
@@ -279,7 +279,7 @@ class ADCClient:
         for result in self.ws_client.subscribe(
             queries.STUDY_SUBSCRIPTION.query, variable_values=variables
         ):
-            yield result
+            yield StudySubscriptionEvent.parse_event(result['study'])
 
     def subscribe_to_investigation(self, investigation_id: str) -> Iterator[dict]:
         """
