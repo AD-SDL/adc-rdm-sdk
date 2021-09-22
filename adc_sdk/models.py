@@ -1,4 +1,5 @@
 """Data models for the return types produced by the SDK"""
+# TODO (wardlt): Perhaps break base formats into separate files from subscription and modification events?
 from datetime import datetime
 from typing import Optional, List
 
@@ -92,6 +93,13 @@ class Study(BaseModel):
             response[tag] = [dtype.parse_obj(x) for x in _remove_edgenode_syntax(response[tag])]
 
         return cls.parse_obj(response)
+
+
+class CreateSampleResponse(BaseModel):
+    """Response for creating a sample"""
+
+    success: bool = Field(..., help='Whether the creation was successful')
+    sample: Optional[Sample] = Field(None, help='Metadata for the new sample')
 
 
 class StudySubscriptionEvent(BaseModel):

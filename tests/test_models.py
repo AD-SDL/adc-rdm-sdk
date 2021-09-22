@@ -1,6 +1,6 @@
 import json
 
-from adc_sdk.models import User, Sample, Study, StudySubscriptionEvent
+from adc_sdk.models import User, Sample, Study, StudySubscriptionEvent, CreateSampleResponse
 
 
 def test_user(example_dir):
@@ -23,6 +23,13 @@ def test_study(example_dir):
     assert obj.name == 'polybot-ai-test'
     assert obj.permissions[0].user.id == 'VXNlcjo1'
     assert len(obj.samples) == 2
+
+
+def test_create_sample(example_dir):
+    reply = json.loads(example_dir.joinpath('create-sample.json').read_text())
+    obj = CreateSampleResponse.parse_obj(reply)
+    assert obj.success
+    assert obj.sample is not None
 
 
 def test_study_event(example_dir):

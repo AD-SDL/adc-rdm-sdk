@@ -7,7 +7,7 @@ from gql.transport.websockets import WebsocketsTransport
 from adc_sdk import queries, exceptions
 from typing import Iterator
 
-from adc_sdk.models import User, Sample, Study, StudySubscriptionEvent
+from adc_sdk.models import User, Sample, Study, StudySubscriptionEvent, CreateSampleResponse
 
 
 class ADCClient:
@@ -143,7 +143,7 @@ class ADCClient:
 
     def create_sample(
         self, file: BinaryIO, study_id: str, name: str, keywords: list = None, parent_id: str = None, source: str = None
-    ) -> dict:
+    ) -> CreateSampleResponse:
         """
         Create a new sample.
         Arguments:
@@ -162,7 +162,8 @@ class ADCClient:
         }
         if parent_id: variables["parentId"] = parent_id
         if source: variables["source"] = source
-        return self._execute(queries.CREATE_SAMPLE, variables, file_upload=True)
+        response = self._execute(queries.CREATE_SAMPLE, variables, file_upload=True)
+        return CreateSampleResponse.parse_obj(response)
 
     def create_datafile(
         self, name: str, job_id: str, file: BinaryIO, description: str = None, source: str = None

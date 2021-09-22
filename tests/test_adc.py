@@ -1,4 +1,5 @@
 import json
+from io import BytesIO
 from pathlib import Path
 
 from pytest_mock import MockFixture
@@ -57,6 +58,12 @@ def test_get_study(client, example_dir, mocker):
     _mock_response(mocker, example_dir, 'study.json')
     study = client.get_study('fake')
     assert study.name == "polybot-ai-test"
+
+
+def test_create_sample(client, example_dir, mocker):
+    _mock_response(mocker, example_dir, 'create-sample.json')
+    response = client.create_sample(BytesIO(b'fake'), 'fake', 'fake')
+    assert response.success
 
 
 def test_subscribe(client, example_dir, mocker):
