@@ -1,0 +1,14 @@
+{
+    "sample": {
+        "id": "U2FtcGxlTm9kZToxNg==",
+        "name": "000286e59a",
+        "keywords": [],
+        "url": "https://httpstat.us/200",
+        "created": "2021-08-31T20:33:22.241986+00:00",
+        "user": {
+            "id": "VXNlcjo1",
+            "name": "Test Name",
+            "email": "test_user@test.com"
+        }
+    }
+}

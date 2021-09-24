@@ -1,0 +1,53 @@
+{
+    "study": {
+        "id": "U3R1ZHlOb2RlOjU=",
+        "name": "polybot-ai-test",
+        "description": "Test study for developing the Polybot AI planning service.",
+        "keywords": [],
+        "startDate": null,
+        "status": "NEW",
+        "created": "2021-08-30T16:54:41.706854+00:00",
+        "updated": "2021-08-30T16:54:42.127315+00:00",
+        "permissions": {
+            "edges": [
+                {
+                    "node": {
+                        "user": {
+                            "id": "VXNlcjo1",
+                            "name": "Test Name",
+                            "email": "test_user@test.com"
+                        },
+                        "level": "ADMIN"
+                    }
+                }
+            ]
+        },
+        "investigations": {
+            "edges": []
+        },
+        "samples": {
+            "edges": [
+                {
+                    "node": {
+                        "id": "U2FtcGxlTm9kZToxNQ==",
+                        "name": "000286e59a",
+                        "url": "https://s3-stage.discoverycloud.anl.gov/adc-test/samples/000286e59a.json?AWSAccessKeyId=73cf579b511a35c476f338ef1413397d&Signature=IY43WXP09iEnI1tfh864GS5nf4I%3D&Expires=1632242949",
+                        "keywords": [],
+                        "created": "2021-08-30T17:48:13.570686+00:00",
+                        "updated": "2021-08-30T17:48:13.570717+00:00"
+                    }
+                },
+                {
+                    "node": {
+                        "id": "U2FtcGxlTm9kZToxNg==",
+                        "name": "000286e59a",
+                        "url": "https://s3-stage.discoverycloud.anl.gov/adc-test/samples/000286e59a_UcWJRrA.json?AWSAccessKeyId=73cf579b511a35c476f338ef1413397d&Signature=wQa0Qpjj0rjefd4a%2BIubP3zD9vw%3D&Expires=1632242949",
+                        "keywords": [],
+                        "created": "2021-08-31T20:33:22.241986+00:00",
+                        "updated": "2021-08-31T20:33:22.242018+00:00"
+                    }
+                }
+            ]
+        }
+    }
+}

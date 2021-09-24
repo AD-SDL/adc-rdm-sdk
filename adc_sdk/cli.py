@@ -2,9 +2,12 @@ import os
 import json
 import typer
 from datetime import datetime
+
+from pydantic import BaseModel
+
 from adc_sdk.client import ADCClient
 from adc_sdk.exceptions import ADCError
-from typing import List
+from typing import List, Union
 
 app = typer.Typer()
 
@@ -37,8 +40,11 @@ def get_client() -> ADCClient:
     return ADCClient(token)
 
 
-def print_to_stdout(content: dict):
-    typer.echo(json.dumps(content, indent=4))
+def print_to_stdout(content: Union[dict, BaseModel]):
+    if isinstance(content, BaseModel):
+        typer.echo(content.json(indent=4, exclude_unset=True))
+    else:
+        typer.echo(json.dumps(content, indent=4))
 
 
 def fetch_and_output_response(client_method, *args):

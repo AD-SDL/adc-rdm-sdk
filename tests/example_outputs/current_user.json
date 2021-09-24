@@ -1,0 +1,11 @@
+{
+    "me": {
+        "email": "test_user@test.com",
+        "name": "Test Name",
+        "globusUsername": "test_username",
+        "organization": "Test Organization",
+        "created": "2021-08-06T14:28:35.181805+00:00",
+        "updated": "2021-09-20T03:21:51.890659+00:00",
+        "id": "VXNlcjo1"
+    }
+}

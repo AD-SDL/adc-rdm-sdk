@@ -1,0 +1,17 @@
+{
+    "success": true,
+    "sample": {
+        "id": "U2FtcGxlTm9kZTo0NQ==",
+        "name": "089c658563",
+        "user": {
+            "id": "VXNlcjo1",
+            "name": "Test Name",
+            "email": "test_user@test.com"
+        },
+        "keywords": [],
+        "parent": null,
+        "created": "2021-09-22T12:45:21.624286+00:00",
+        "updated": "2021-09-22T12:45:21.624311+00:00",
+        "url": "https://s3-stage.discoverycloud.anl.gov/adc-test/samples/0_nHQ4GHq?AWSAccessKeyId=73cf579b511a35c476f338ef1413397d&Signature=Vv0jwVtAdk8bBCyT%2BTD0v00zNLE%3D&Expires=1632318321"
+    }
+}

@@ -7,6 +7,8 @@ from gql.transport.websockets import WebsocketsTransport
 from adc_sdk import queries, exceptions
 from typing import Iterator
 
+from adc_sdk.models import User, Sample, Study, StudySubscriptionEvent, CreateSampleResponse
+
 
 class ADCClient:
     """
@@ -52,23 +54,25 @@ class ADCClient:
         """
         return self._execute(queries.STUDIES)
 
-    def get_study(self, study_id: str) -> dict:
+    def get_study(self, study_id: str) -> Study:
         """
         Retrieve a specific study.
         Arguments:
             study_id: Study ID
         """
         variables = {"id": study_id}
-        return self._execute(queries.STUDY, variables)
+        response = self._execute(queries.STUDY, variables)
+        return Study.parse_response(response['study'])
 
-    def get_sample(self, sample_id: str) -> dict:
+    def get_sample(self, sample_id: str) -> Sample:
         """
         Retrieve a specific sample.
         Arguments:
             sample_id: Sample ID
         """
         variables = {"id": sample_id}
-        return self._execute(queries.SAMPLE, variables)
+        response = self._execute(queries.SAMPLE, variables)
+        return Sample.parse_obj(response['sample'])
 
     def get_datafile(self, datafile_id: str) -> dict:
         """
@@ -88,11 +92,12 @@ class ADCClient:
         variables = {"id": job_id}
         return self._execute(queries.JOB, variables)
 
-    def get_current_user(self) -> dict:
+    def get_current_user(self) -> User:
         """
         Retrieve the currently authenticated user.
         """
-        return self._execute(queries.CURRENT_USER)
+        response = self._execute(queries.CURRENT_USER)
+        return User.parse_obj(response['me'])
 
     def get_investigation(self, investigation_id: str) -> dict:
         """
@@ -138,7 +143,7 @@ class ADCClient:
 
     def create_sample(
         self, file: BinaryIO, study_id: str, name: str, keywords: list = None, parent_id: str = None, source: str = None
-    ) -> dict:
+    ) -> CreateSampleResponse:
         """
         Create a new sample.
         Arguments:
@@ -157,7 +162,8 @@ class ADCClient:
         }
         if parent_id: variables["parentId"] = parent_id
         if source: variables["source"] = source
-        return self._execute(queries.CREATE_SAMPLE, variables, file_upload=True)
+        response = self._execute(queries.CREATE_SAMPLE, variables, file_upload=True)
+        return CreateSampleResponse.parse_obj(response)
 
     def create_datafile(
         self, name: str, job_id: str, file: BinaryIO, description: str = None, source: str = None
@@ -264,7 +270,7 @@ class ADCClient:
         variables = {"studyId": study_id, "userId": user_id}
         return self._execute(queries.REMOVE_PERMISSIONS, variables)
 
-    def subscribe_to_study(self, study_id: str) -> Iterator[dict]:
+    def subscribe_to_study(self, study_id: str) -> Iterator[StudySubscriptionEvent]:
         """
         Subscribe to a study to get notifications when a new sample is added or an investigation is created.
         Arguments:
@@ -274,7 +280,7 @@ class ADCClient:
         for result in self.ws_client.subscribe(
             queries.STUDY_SUBSCRIPTION.query, variable_values=variables
         ):
-            yield result
+            yield StudySubscriptionEvent.parse_event(result['study'])
 
     def subscribe_to_investigation(self, investigation_id: str) -> Iterator[dict]:
         """

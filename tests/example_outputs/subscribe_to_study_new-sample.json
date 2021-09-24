@@ -1,0 +1,64 @@
+{
+    "study": {
+        "study": {
+            "id": "U3R1ZHlOb2RlOjMz",
+            "name": "706data",
+            "description": "Data from an early run of PolyBot for PEDOT:PSS films",
+            "keywords": [],
+            "startDate": null,
+            "status": "NEW",
+            "permissions": {
+                "edges": [
+                    {
+                        "node": {
+                            "user": {
+                                "id": "VXNlcjo1",
+                                "name": "Test Name",
+                                "email": "test_user@test.com"
+                            },
+                            "level": "ADMIN"
+                        }
+                    }
+                ]
+            },
+            "investigations": {
+                "edges": []
+            },
+            "samples": {
+                "edges": [
+                    {
+                        "node": {
+                            "id": "U2FtcGxlTm9kZTozOQ==",
+                            "name": "000286e59a",
+                            "url": "https://s3-stage.discoverycloud.anl.gov/adc-test/samples/0_qiLBZJX?AWSAccessKeyId=73cf579b511a35c476f338ef1413397d&Signature=uQiEWmyRRJYKYu9Pk8ncP%2BHl454%3D&Expires=1632318288",
+                            "keywords": [],
+                            "user": {
+                                "id": "VXNlcjo1",
+                                "name": "Test Name",
+                                "email": "test_user@test.com"
+                            },
+                            "created": "2021-09-22T12:44:48.585453+00:00"
+                        }
+                    }
+                ]
+            },
+            "created": "2021-09-22T12:25:24.381000+00:00",
+            "updated": "2021-09-22T12:25:25.017000+00:00"
+        },
+        "investigation": null,
+        "sample": {
+            "id": "U2FtcGxlTm9kZTozOQ==",
+            "name": "000286e59a",
+            "url": "https://s3-stage.discoverycloud.anl.gov/adc-test/samples/0_qiLBZJX?AWSAccessKeyId=73cf579b511a35c476f338ef1413397d&Signature=uQiEWmyRRJYKYu9Pk8ncP%2BHl454%3D&Expires=1632318288",
+            "user": {
+                "id": "VXNlcjo1",
+                "name": "Test Name",
+                "email": "test_user@test.com"
+            },
+            "keywords": [],
+            "created": "2021-09-22T12:44:48.585000+00:00",
+            "updated": "2021-09-22T12:44:48.585000+00:00"
+        },
+        "source": null
+    }
+}
