@@ -7,8 +7,8 @@ import requests
 from pydantic import BaseModel, Field, EmailStr, HttpUrl
 
 
-def _remove_edgenode_syntax(data: dict) -> List[dict]:
-    """Remove the edge-node syntax"""
+def _remove_relay_syntax(data: dict) -> List[dict]:
+    """Remove the "edge" and "node" syntax from API response introduced by relay"""
     return [x['node'] for x in data['edges']]
 
 
@@ -90,7 +90,7 @@ class Study(BaseModel):
 
         # Convert samples, investigations and permissions to their respective data models
         for tag, dtype in [('samples', Sample), ('investigations', Investigation), ('permissions', Permission)]:
-            response[tag] = [dtype.parse_obj(x) for x in _remove_edgenode_syntax(response[tag])]
+            response[tag] = [dtype.parse_obj(x) for x in _remove_relay_syntax(response[tag])]
 
         return cls.parse_obj(response)
 
