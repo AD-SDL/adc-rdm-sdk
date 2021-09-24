@@ -5,4 +5,4 @@ from pytest import fixture
 
 @fixture()
 def example_dir():
-    return Path(__file__).parent.joinpath('example-outputs')
+    return Path(__file__).parent.joinpath('example_outputs')

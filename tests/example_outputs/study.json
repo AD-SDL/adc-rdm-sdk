@@ -14,8 +14,8 @@
                     "node": {
                         "user": {
                             "id": "VXNlcjo1",
-                            "name": "",
-                            "email": "loganw@uchicago.edu"
+                            "name": "Test Name",
+                            "email": "test_user@test.com"
                         },
                         "level": "ADMIN"
                     }

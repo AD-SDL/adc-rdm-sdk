@@ -43,7 +43,7 @@ def _mock_subscribe(mocker: MockFixture, example_dir: Path, file_name):
 
 
 def test_current_user(client, example_dir, mocker: MockFixture):
-    _mock_response(mocker, example_dir, 'user.json')
+    _mock_response(mocker, example_dir, 'current_user.json')
     user = client.get_current_user()
     assert user.id == "VXNlcjo1"
 
@@ -61,12 +61,12 @@ def test_get_study(client, example_dir, mocker):
 
 
 def test_create_sample(client, example_dir, mocker):
-    _mock_response(mocker, example_dir, 'create-sample.json')
+    _mock_response(mocker, example_dir, 'create_sample.json')
     response = client.create_sample(BytesIO(b'fake'), 'fake', 'fake')
     assert response.success
 
 
 def test_subscribe(client, example_dir, mocker):
-    _mock_subscribe(mocker, example_dir, 'subscribe-to-study_new-sample.json')
+    _mock_subscribe(mocker, example_dir, 'subscribe_to_study_new-sample.json')
     event = next(client.subscribe_to_study('fake'))
     assert event.study.name == '706data'

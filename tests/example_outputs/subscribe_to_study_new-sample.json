@@ -13,8 +13,8 @@
                         "node": {
                             "user": {
                                 "id": "VXNlcjo1",
-                                "name": "",
-                                "email": "loganw@uchicago.edu"
+                                "name": "Test Name",
+                                "email": "test_user@test.com"
                             },
                             "level": "ADMIN"
                         }
@@ -34,8 +34,8 @@
                             "keywords": [],
                             "user": {
                                 "id": "VXNlcjo1",
-                                "name": "",
-                                "email": "loganw@uchicago.edu"
+                                "name": "Test Name",
+                                "email": "test_user@test.com"
                             },
                             "created": "2021-09-22T12:44:48.585453+00:00"
                         }
@@ -52,8 +52,8 @@
             "url": "https://s3-stage.discoverycloud.anl.gov/adc-test/samples/0_qiLBZJX?AWSAccessKeyId=73cf579b511a35c476f338ef1413397d&Signature=uQiEWmyRRJYKYu9Pk8ncP%2BHl454%3D&Expires=1632318288",
             "user": {
                 "id": "VXNlcjo1",
-                "name": "",
-                "email": "loganw@uchicago.edu"
+                "name": "Test Name",
+                "email": "test_user@test.com"
             },
             "keywords": [],
             "created": "2021-09-22T12:44:48.585000+00:00",

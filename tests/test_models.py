@@ -4,9 +4,9 @@ from adc_sdk.models import User, Sample, Study, StudySubscriptionEvent, CreateSa
 
 
 def test_user(example_dir):
-    user_reply = json.loads(example_dir.joinpath('user.json').read_text())
+    user_reply = json.loads(example_dir.joinpath('current_user.json').read_text())
     user = User.parse_obj(user_reply['me'])
-    assert user.globus_username == "my_username"
+    assert user.globus_username == "test_username"
     assert user.created.day == 6
 
 
@@ -26,13 +26,13 @@ def test_study(example_dir):
 
 
 def test_create_sample(example_dir):
-    reply = json.loads(example_dir.joinpath('create-sample.json').read_text())
+    reply = json.loads(example_dir.joinpath('create_sample.json').read_text())
     obj = CreateSampleResponse.parse_obj(reply)
     assert obj.success
     assert obj.sample is not None
 
 
 def test_study_event(example_dir):
-    reply = json.loads(example_dir.joinpath('subscribe-to-study_new-sample.json').read_text())
+    reply = json.loads(example_dir.joinpath('subscribe_to_study_new-sample.json').read_text())
     obj = StudySubscriptionEvent.parse_event(reply['study'])
     assert obj.study is not None
