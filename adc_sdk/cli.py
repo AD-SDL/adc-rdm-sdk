@@ -1,6 +1,7 @@
 import os
 import json
 import typer
+import click
 from datetime import datetime
 
 from pydantic import BaseModel
@@ -9,7 +10,13 @@ from adc_sdk.client import ADCClient
 from adc_sdk.exceptions import ADCError
 from typing import List, Union
 
-app = typer.Typer()
+
+class NaturalOrderGroup(click.Group):
+    def list_commands(self, ctx):
+        return self.commands.keys()
+
+
+app = typer.Typer(cls=NaturalOrderGroup)
 
 
 @app.callback()
@@ -21,8 +28,8 @@ def adc():
 
 def get_token_from_env():
     """
-    Fetch and returns ADC_ACCESS_TOKEN env var.
-    Outputs error if it is not present.
+    Fetch and returns ADC_ACCESS_TOKEN env var
+    Outputs error if it is not present
     """
     try:
         return os.environ["ADC_ACCESS_TOKEN"]
@@ -34,7 +41,7 @@ def get_token_from_env():
 
 def get_client() -> ADCClient:
     """
-    Return an instance of ADCClient using the ADC_ACCESS_TOKEN env var.
+    Return an instance of ADCClient using the ADC_ACCESS_TOKEN env var
     """
     token = get_token_from_env()
     return ADCClient(token)
@@ -59,178 +66,226 @@ def fetch_and_output_response(client_method, *args):
 @app.command()
 def current_user():
     """
-    Fetch current user's information.
+    Fetch current user's information
     """
-    client_method = 'get_current_user'
+    client_method = "get_current_user"
     fetch_and_output_response(client_method)
 
 
 @app.command()
 def tokens():
     """
-    List current user's available API tokens.
+    List current user's available API tokens
     """
-    client_method = 'get_tokens'
+    client_method = "get_tokens"
     fetch_and_output_response(client_method)
 
 
 @app.command()
 def studies():
     """
-    List studies available to the current user.
+    List studies available to the current user
     """
-    client_method = 'get_studies'
+    client_method = "get_studies"
     fetch_and_output_response(client_method)
 
 
 @app.command()
 def study(study_id: str):
     """
-    Get details of a specific study.
+    Fetch a specific study
     """
-    client_method = 'get_study'
+    client_method = "get_study"
     fetch_and_output_response(client_method, study_id)
+
+
+@app.command()
+def sample(sample_id: str):
+    """
+    Fetch a specific sample
+    """
+    client_method = "get_sample"
+    fetch_and_output_response(client_method, sample_id)
 
 
 @app.command()
 def investigation(investigation_id: str):
     """
-    Get details of a specific investigation.
+    Fetch a specific investigation
     """
-    client_method = 'get_investigation'
+    client_method = "get_investigation"
     fetch_and_output_response(client_method, investigation_id)
 
 
 @app.command()
 def job(job_id: str):
     """
-    Get details of a specific job.
+    Fetch a specific job
     """
-    client_method = 'get_job'
+    client_method = "get_job"
     fetch_and_output_response(client_method, job_id)
 
 
 @app.command()
 def datafile(datafile_id: str):
     """
-    Get details of a specific datafile.
+    Fetch a specific datafile
     """
-    client_method = 'get_datafile'
+    client_method = "get_datafile"
     fetch_and_output_response(client_method, datafile_id)
-
-
-@app.command()
-def sample(sample_id: str):
-    """
-    Get details of a specific sample.
-    """
-    client_method = 'get_sample'
-    fetch_and_output_response(client_method, sample_id)
 
 
 @app.command()
 def create_token(name: str):
     """
-    Create a new token for the current user.
+    Create a new API token
     """
-    client_method = 'create_token'
+    client_method = "create_token"
     fetch_and_output_response(client_method, name)
 
 
 @app.command()
 def delete_token(token_id: str):
     """
-    Delete a specific token from the current user's available tokens.
+    Delete a specific token
     """
-    client_method = 'delete_token'
+    client_method = "delete_token"
     fetch_and_output_response(client_method, token_id)
 
 
-@app.command()
+@app.command(short_help="Create a Study")
 def create_study(
-    name: str,
-    description: str,
-    keywords: List[str] = typer.Option(default=None),
+    name: str = typer.Argument(..., help="User-provided name of the study"),
+    description: str = typer.Option(
+        default=None, help="Longer-form description of the study"
+    ),
+    keywords: List[str] = typer.Option(default=None, help="Space separated keywords"),
+    start_date: datetime = typer.Option(
+        default=None, formats=["%Y-%m-%d"], help="Date when the study began"
+    ),
+    end_date: datetime = typer.Option(
+        default=None, formats=["%Y-%m-%d"], help="Date when the study ended"
+    ),
 ):
     """
-    Create a new Study, current user will be the owner and will have admin permissions.
+    Create a new Study, current user will be the owner and will have admin permissions
     """
-    keywords = [] if not keywords else [k for k in keywords[0].split(' ')]
-    client_method = 'create_study'
-    fetch_and_output_response(client_method, name, description, keywords)
+    if start_date:
+        start_date = start_date.date()
+    if end_date:
+        end_date = end_date.date()
+    if keywords:
+        keywords = [k for k in keywords[0].split(" ")]
+    client_method = "create_study"
+    fetch_and_output_response(
+        client_method, name, description, keywords, start_date, end_date
+    )
 
 
-@app.command()
+@app.command(short_help="Create a Sample")
 def create_sample(
-    sample_file_path: str,
-    study_id: str,
-    name: str,
-    keywords: List[str] = typer.Option(default=None),
-    parent_id: str = typer.Option(default=None),
-    source: str = typer.Option(default=None),
+    name: str = typer.Argument(..., help="User-provided name of the sample"),
+    study_id: str = typer.Argument(..., help="ID of the study this sample belongs to"),
+    file: str = typer.Option(default=None, help="Path to the sample file"),
+    keywords: List[str] = typer.Option(default=None, help="Space separated keywords"),
+    parent_id: str = typer.Option(default=None, help="ID of the parent sample"),
+    source: str = typer.Option(
+        default=None,
+        help='Custom message to include as the "source" field in the study\'s subscriptions',
+    ),
 ):
     """
-    Create a Sample under the specified Study to (possibly) be used as input for a Job to generate Datafiles.
-    Triggers notifications for Study subscriptors.
+    Create a Sample under the specified Study to (possibly) be used as input for a Job to generate Datafiles \n
+    * Triggers notifications for its Study subscriptors
     """
-    if not os.path.isfile(sample_file_path):
-        typer.echo("Invalid sample file path", err=True)
-    keywords = [] if not keywords else [k for k in keywords[0].split(' ')]
-    with open(sample_file_path, 'rb') as file:
-        client_method = 'create_sample'
-        fetch_and_output_response(client_method, file, study_id, name, keywords, parent_id, source)
+    client_method = "create_sample"
+    if keywords:
+        keywords = [k for k in keywords[0].split(" ")]
+    if file:
+        if not os.path.isfile(file):
+            typer.echo("Invalid file path", err=True)
+        with open(file, "rb") as sample_file:
+            fetch_and_output_response(
+                client_method, study_id, name, sample_file, keywords, parent_id, source
+            )
+    else:
+        fetch_and_output_response(
+            client_method, study_id, name, None, keywords, parent_id, source
+        )
 
 
-@app.command()
-def create_datafile(
-    file_path: str,
-    job_id: str,
-    name: str,
-    description: str = typer.Option(default=None),
-    source: str = typer.Option(default=None),
-):
-    """
-    Create a Datafile that will be considered as a result file from the specified Job
-    Triggers notifications for Job subscriptors.
-    """
-    if not os.path.isfile(file_path):
-        typer.echo("Invalid sample file path", err=True)
-    with open(file_path, 'rb') as file:
-        client_method = 'create_datafile'
-        fetch_and_output_response(client_method, name, job_id, file, description, source)
-
-
-@app.command()
+@app.command(short_help="Create an Investigation")
 def create_investigation(
-    study_id: str,
-    name: str,
-    description: str,
-    keywords: List[str] = typer.Option(default=None),
-    investigation_type: str = typer.Option(default=None),
+    study_id: str = typer.Argument(
+        ..., help="ID of the study this investigation belongs to"
+    ),
+    name: str = typer.Argument(..., help="User-provided name of the investigation"),
+    description: str = typer.Option(
+        default=None, help="Longer-form description of the investigation"
+    ),
+    start_date: datetime = typer.Option(
+        default=None, formats=["%Y-%m-%d"], help="Date when the investigation began"
+    ),
+    end_date: datetime = typer.Option(
+        default=None, formats=["%Y-%m-%d"], help="Date when the investigation ended"
+    ),
+    keywords: List[str] = typer.Option(default=None, help="Space separated keywords"),
+    investigation_type: str = typer.Option(default=None, help="Investigation type"),
+    source: str = typer.Option(
+        default=None,
+        help='Custom message to include as the "source" field in the study\'s subscriptions',
+    ),
 ):
     """
-    Create an Investigation under the specified Study.
-    Triggers notifications for Study subscriptors.
+    Create an Investigation under the specified Study \n
+    * Triggers notifications for its Study subscriptors
     """
-    client_method = 'create_investigation'
-    keywords = [] if not keywords else [k for k in keywords[0].split(' ')]
-    fetch_and_output_response(client_method, study_id, name, description, keywords, investigation_type)
+    client_method = "create_investigation"
+    if keywords:
+        keywords = [k for k in keywords[0].split(" ")]
+    if start_date:
+        start_date = start_date.date()
+    if end_date:
+        end_date = end_date.date()
+    fetch_and_output_response(
+        client_method,
+        study_id,
+        name,
+        description,
+        investigation_type,
+        keywords,
+        start_date,
+        end_date,
+        source,
+    )
 
 
-@app.command()
+@app.command(short_help="Create a Job")
 def create_job(
-    investigation_id: str,
-    sample_id: str,
-    start_datetime: datetime,
-    end_datetime: datetime = typer.Option(default=None),
-    status: str = typer.Option(default=None),
-    source: str = typer.Option(default=None)
+    investigation_id: str = typer.Argument(
+        ..., help="ID of the investigation this job belongs to"
+    ),
+    sample_id: str = typer.Option(default=None, help="ID of the job's input sample"),
+    status: str = typer.Option(
+        default=None,
+        help="Job status. One of ['created', 'running', 'completed', 'canceled']",
+    ),
+    start_datetime: datetime = typer.Option(
+        default=None, formats=["%Y-%m-%dT%H:%M:%S"], help="Datetime when the job began"
+    ),
+    end_datetime: datetime = typer.Option(
+        default=None, formats=["%Y-%m-%dT%H:%M:%S"], help="Datetime when the job ended"
+    ),
+    source: str = typer.Option(
+        default=None,
+        help='Custom message to include as the "source" field in the investigation\'s subscriptions',
+    ),
 ):
     """
-    Create a Job under the specified Investigation.
-    Triggers notifications for Investigation subscriptors.
+    Create a Job under the specified Investigation \n
+    * Triggers notifications for its Investigation subscriptors
     """
-    client_method = 'create_job'
+    client_method = "create_job"
     fetch_and_output_response(
         client_method,
         investigation_id,
@@ -238,77 +293,119 @@ def create_job(
         start_datetime,
         end_datetime,
         status,
-        source
+        source,
     )
 
 
-@app.command()
+@app.command(short_help="Update an already existing Job")
 def update_job(
-    job_id: str,
-    status: str,
-    end_datetime: datetime = typer.Option(default=None),
-    source: str = typer.Option(default=None)
+    job_id: str = typer.Argument(..., help="ID of the job to update"),
+    status: str = typer.Option(
+        default=None,
+        help="Job status. One of ['created', 'running', 'completed', 'canceled']",
+    ),
+    start_datetime: datetime = typer.Option(
+        default=None, formats=["%Y-%m-%dT%H:%M:%S"], help="Datetime when the job began"
+    ),
+    end_datetime: datetime = typer.Option(
+        default=None, formats=["%Y-%m-%dT%H:%M:%S"], help="Datetime when the job ended"
+    ),
+    source: str = typer.Option(
+        default=None,
+        help='Custom message to include as the "source" field in the job\'s subscriptions',
+    ),
 ):
     """
-    Update an already existing Job.
-    Triggers notifications for Job subscriptors.
+    Update an already existing Job \n
+    * Triggers notifications for Job subscriptors
     """
-    client_method = 'update_job'
+    client_method = "update_job"
     fetch_and_output_response(
-        client_method,
-        job_id,
-        status,
-        end_datetime,
-        source
+        client_method, job_id, status, start_datetime, end_datetime, source
     )
 
 
-@app.command()
+@app.command(short_help="Create a Datafile (Job result)")
+def create_datafile(
+    file: str = typer.Argument(..., help="Path to the datafile actual file"),
+    job_id: str = typer.Argument(..., help="ID of the job this datafile results from"),
+    name: str = typer.Argument(..., help="User-provided name of the datafile"),
+    description: str = typer.Option(
+        default=None, help="Longer-form description of the datafile"
+    ),
+    source: str = typer.Option(
+        default=None,
+        help='Custom message to include as the "source" field in the study\'s subscriptions',
+    ),
+):
+    """
+    Create a Datafile (Job result file) \n
+    * Triggers notifications for Job subscriptors
+    """
+    if not os.path.isfile(file):
+        typer.echo("Invalid file path", err=True)
+    with open(file, "rb") as datafile_file:
+        client_method = "create_datafile"
+        fetch_and_output_response(
+            client_method, name, job_id, datafile_file, description, source
+        )
+
+
+@app.command(short_help="Set user permissions over study")
 def set_permissions(study_id: str, user_id: str, permission_level: str):
     """
-    Set permission level for the specified User over the specified Study.
+    Set permission level for the specified user over the specified study
     """
-    client_method = 'set_permissions'
+    client_method = "set_permissions"
     fetch_and_output_response(client_method, study_id, user_id, permission_level)
 
 
-@app.command()
+@app.command(short_help="Remove user permissions over study")
 def remove_permissions(study_id: str, user_id: str):
     """
-    Remove the specified User permissions over the specified Study.
+    Remove the specified user permissions over the specified study
     """
-    client_method = 'remove_permissions'
+    client_method = "remove_permissions"
     fetch_and_output_response(client_method, study_id, user_id)
 
 
-@app.command()
+@app.command(short_help="Subscribe to study")
 def subscribe_to_study(study_id):
     """
-    Subscribe to the specified study and print notifications to stdout.
-    Notifications will be either for new Samples and Investigations under the specified Study.
+    Subscribe to the specified study and print notifications to stdout \n
+    Notifications will be either for new Samples and Investigations under the specified Study
     """
     client = get_client()
-    for notification in client.subscribe_to_study(study_id):
-        print_to_stdout(notification)
+    try:
+        for notification in client.subscribe_to_study(study_id):
+            print_to_stdout(notification)
+    except ADCError as e:
+        typer.echo(e.error, err=True)
 
 
-@app.command()
+@app.command(short_help="Subscribe to investigation")
 def subscribe_to_investigation(investigation_id):
     """
-    Subscribe to the specified Investigation and print notifications to stdout.
-    Notifications will be for Jobs created under the specified Study.
+    Subscribe to the specified Investigation and print notifications to stdout \n
+    Notifications will be for Jobs created under the specified Study
     """
     client = get_client()
-    for notification in client.subscribe_to_investigation(investigation_id):
-        print_to_stdout(notification)
+    try:
+        for notification in client.subscribe_to_investigation(investigation_id):
+            print_to_stdout(notification)
+    except ADCError as e:
+        typer.echo(e.error, err=True)
 
 
-@app.command()
+@app.command(short_help="Subscribe to job")
 def subscribe_to_job(job_id):
     """
-    Subscribe to the specified Job and print notifications to stdout.
-    Notifications will be for Job updates and new Datafiles added to the specified Job.
+    Subscribe to the specified Job and print notifications to stdout \n
+    Notifications will be for Job updates and new Datafiles added to the specified Job
     """
     client = get_client()
-    for notification in client.subscribe_to_job(job_id):
-        print_to_stdout(notification)
+    try:
+        for notification in client.subscribe_to_job(job_id):
+            print_to_stdout(notification)
+    except ADCError as e:
+        typer.echo(e.error, err=True)

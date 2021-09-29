@@ -5,8 +5,6 @@ CURRENT_USER = """
             name
             globusUsername
             organization
-            created
-            updated
             id
         }
     }
@@ -23,11 +21,9 @@ STUDIES = """
                     keywords
                     startDate
                     status
-                    created
-                    updated
                     permissions { edges { node { user { id name email } level } } }
-                    investigations { edges { node { id name description type keywords startDatetime endDatetime created updated } } }
-                    samples { edges { node { id name url keywords created updated } } }
+                    investigations { edges { node { id name description keywords startDate endDate } } }
+                    samples { edges { node { id name url keywords } } }
                 }
             }
         }
@@ -42,46 +38,66 @@ STUDY = """
             description
             keywords
             startDate
+            endDate
             status
-            created
-            updated
             permissions { edges { node { user { id name email } level } } }
-            investigations { edges { node { id name description type keywords startDatetime endDatetime created updated } } }
-            samples { edges { node { id name url keywords created updated } } }
+            investigations { edges { node { id name description keywords startDate endDate } } }
+            samples { edges { node { id name url keywords } } }
         }
     }
 """
 
 CREATE_STUDY = """
-    mutation ($description: String, $keywords: [String], $name: String) {
-        createStudy(description: $description, keywords: $keywords, name: $name) {
-            success
+    mutation (
+        $name: String!,
+        $description: String,
+        $keywords: [String],
+        $startDate: Date,
+        $endDate: Date
+    ) {
+        createStudy(
+            name: $name,
+            description: $description,
+            keywords: $keywords,
+            startDate: $startDate,
+            endDate: $endDate
+        ){
             study {
                 id
                 name
                 description
                 keywords
                 startDate
+                endDate
                 status
-                created
-                updated
             }
         }
     }
 """
 
 CREATE_SAMPLE = """
-    mutation ($file: Upload!, $keywords: [String], $name: String!, $parentId: ID, $source: String, $studyId: ID!) {
-        createSample(file: $file, keywords: $keywords, name: $name, parentId: $parentId, source: $source, studyId: $studyId) {
+    mutation (
+        $name: String!,
+        $studyId: ID!
+        $file: Upload,
+        $keywords: [String],
+        $parentId: ID,
+        $source: String
+    ) {
+        createSample(
+            name: $name,
+            studyId: $studyId,
+            file: $file,
+            keywords: $keywords,
+            parentId: $parentId,
+            source: $source
+        ) {
             success
             sample {
                 id
                 name
-                user { id name email }
                 keywords
-                parent { id }
-                created
-                updated
+                parent { id name keywords url }
                 url
             }
         }
@@ -98,14 +114,9 @@ STUDY_SUBSCRIPTION = """
                 keywords
                 startDate
                 status
-                permissions { edges { node { user { id name email } level } } }
-                investigations { edges { node { id name description user { id name email }type keywords startDatetime endDatetime created updated } } }
-                samples { edges { node { id name url keywords user { id name email } created } } }
-                created
-                updated
             }
-            investigation { id name description type keywords startDatetime endDatetime created updated }
-            sample { id name url user { id name email } keywords created updated }
+            investigation { id name description investigationType keywords startDate endDate }
+            sample { id name url keywords }
             source
         }
     }
@@ -127,7 +138,7 @@ INVESTIGATION = """
             id
             name
             description
-            type
+            investigationType
             user { id name email }
             keywords
             study {
@@ -137,37 +148,46 @@ INVESTIGATION = """
                 keywords
                 startDate
                 status
-                created
-                updated
-                permissions { edges { node { user { id name email } level } } }
-                investigations { edges { node { id name description type keywords startDatetime endDatetime created updated } } }
-                samples { edges { node { id name url keywords created updated } } }
             }
             jobs { edges { node { id startDatetime endDatetime status  } } }
-            startDatetime
-            endDatetime
-            created
-            updated
+            startDate
+            endDate
         }
     }
 """
 
 CREATE_INVESTIGATION = """
-    mutation ($description: String!, $investigationType: String, $keywords: [String], $name: String!, $studyId: ID!) {
-        createInvestigation(description: $description, investigationType: $investigationType, keywords: $keywords, name: $name, studyId: $studyId) {
+    mutation (
+        $studyId: ID!
+        $name: String!,
+        $description: String,
+        $investigationType: String,
+        $keywords: [String],
+        $startDate: Date,
+        $endDate: Date,
+        $source: String
+    ) {
+        createInvestigation(
+            studyId: $studyId, 
+            name: $name,
+            description: $description,
+            investigationType: $investigationType,
+            keywords: $keywords,
+            startDate: $startDate,
+            endDate: $endDate,
+            source: $source
+        ) {
             success
             investigation {
                 id
                 name
                 description
-                type
+                investigationType
                 user { id name email }
                 keywords
-                study { id name description keywords startDate status created updated }
-                startDatetime
-                endDatetime
-                created
-                updated
+                study { id name description keywords startDate status }
+                startDate
+                endDate
             }
         }
     }
@@ -207,7 +227,14 @@ CREATE_TOKEN = """
 """
 
 CREATE_JOB = """
-    mutation ($investigationId: ID!, $sampleId: ID!, $startDatetime: DateTime!, $endDatetime: DateTime, $status: String, $source: String) {
+    mutation (
+        $investigationId: ID!,
+        $sampleId: ID,
+        $startDatetime: DateTime,
+        $endDatetime: DateTime,
+        $status: String,
+        $source: String
+    ) {
         createJob(investigationId: $investigationId, sampleId: $sampleId, startDatetime: $startDatetime, endDatetime: $endDatetime, status: $status, source: $source) {
             success
             job {
@@ -215,10 +242,8 @@ CREATE_JOB = """
                 endDatetime
                 startDatetime
                 status
-                investigation { id name description type keywords startDatetime endDatetime created updated user { id name email } }
-                sample { id name url user { id name email } keywords created updated }
-                created
-                updated
+                investigation { id name description investigationType keywords startDate endDate user { id name email } }
+                sample { id name url user { id name email } keywords }
             }
         }
     }
@@ -240,8 +265,20 @@ CREATE_DATAFILE = """
 """
 
 UPDATE_JOB = """
-    mutation ($jobId: ID!, $status: String!, $endDatetime: DateTime, $source: String){
-        updateJob(jobId: $jobId, status: $status, endDatetime: $endDatetime, source: $source) {
+    mutation (
+        $jobId: ID!,
+        $status: String,
+        $startDatetime: DateTime,
+        $endDatetime: DateTime,
+        $source: String
+    ){
+        updateJob(
+            jobId: $jobId,
+            status: $status,
+            startDatetime: $startDatetime,
+            endDatetime: $endDatetime,
+            source: $source
+        ) {
             success
             job {
                 id
@@ -262,13 +299,17 @@ JOB_SUBSCRIPTION = """
                 endDatetime
                 startDatetime
                 status
-                investigation { id name description type keywords startDatetime endDatetime created updated user { id name email } }
-                sample { id name url user { id name email } keywords created updated }
-                datafiles { edges { node { id name url user { id name email } created } } }
-                created
-                updated
+                datafiles { 
+                    edges { 
+                        node {
+                            id 
+                            name
+                            url
+                        }
+                    } 
+                }
             }
-            datafile { id name url user { id name email } created }
+            datafile { id name url }
             source
         }
     }
@@ -277,14 +318,21 @@ JOB_SUBSCRIPTION = """
 INVESTIGATION_SUBSCRIPTION = """
     subscription ($investigationId: ID!) {
         investigation(investigationId: $investigationId) {
+            investigation {
+                id
+                name
+                description
+                investigationType
+                keywords
+                startDate
+                endDate
+            }
             job {
                 id
                 endDatetime
                 startDatetime
                 status
-                sample { id name url user { id name email } keywords created }
-                created
-                updated
+                sample { id name url user { id name email } keywords }
             }
             source
         }
@@ -298,7 +346,6 @@ SAMPLE = """
             name
             keywords
             url
-            created
             user { id name email }
         }
     }
@@ -323,7 +370,20 @@ JOB = """
             startDatetime,
             endDatetime,
             status
-            datafiles { edges { node { id name url user { id name email } created } } }
+            datafiles { 
+                edges { 
+                    node {
+                        id 
+                        name
+                        url
+                    }
+                } 
+            }
+            user {
+                id
+                email
+                name
+            }
         }
     }
 """
