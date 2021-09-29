@@ -1,10 +1,9 @@
-# client.py
+# Code Reference and Usage
 
 ::: adc_sdk.client.ADCClient
     handler: python
     selection:
       members:
-        - __init__
         - get_current_user
         - get_tokens
         - get_studies
