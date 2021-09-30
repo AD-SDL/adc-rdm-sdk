@@ -11,7 +11,7 @@ nav:
         - Command reference: cli/usage.md
     - SDK:
         - Getting started: sdk/tutorial.md
-        - Code reference: sdk/code_reference.md
+        - Usage: sdk/code_reference.md
 
 theme: 
   name: material
