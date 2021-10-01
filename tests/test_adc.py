@@ -15,7 +15,7 @@ def client():
 
 
 def test_version():
-    assert __version__ == "0.1.2"
+    assert __version__ == "0.1.4"
 
 
 def _mock_response(mocker: MockFixture, example_dir: Path, file_name):
