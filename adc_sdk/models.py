@@ -64,7 +64,7 @@ class Study(BaseModel):
     """Single study from a larger investigation"""
 
     name: str = Field(..., help='User-provided name of the study')
-    description: str = Field(..., help='Longer-form description of the study')
+    description: str = Field(None, help='Longer-form description of the study')
     keywords: List[str] = Field(default_factory=list, help='List of keywords that categorize a study')
     start_date: Optional[datetime] = Field(None, help='Date when the study began')
     created: datetime = Field(..., help='Date when this study record was created')

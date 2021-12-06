@@ -65,12 +65,39 @@ STUDY = """
             name
             description
             keywords
+            status
+            created
+            updated
             startDate
             endDate
-            status
-            permissions { edges { node { user { id name email } level } } }
-            investigations { edges { node { id name description keywords startDate endDate } } }
-            samples { edges { node { id name url keywords } } }
+            permissions {
+                edges {
+                    node {
+                        user {
+                            id
+                            name
+                            email
+                        }
+                        level
+                    }
+                }
+            }
+            investigations {
+                edges {
+                    node {
+                        id
+                        name
+                    }
+                }
+            }
+            samples {
+                edges {
+                    node {
+                        id
+                        name
+                    }
+                }
+            }
         }
     }
 """
