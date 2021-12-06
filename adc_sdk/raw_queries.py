@@ -19,11 +19,39 @@ STUDIES = """
                     name
                     description
                     keywords
-                    startDate
                     status
-                    permissions { edges { node { user { id name email } level } } }
-                    investigations { edges { node { id name description keywords startDate endDate } } }
-                    samples { edges { node { id name url keywords } } }
+                    created
+                    updated
+                    startDate
+                    endDate
+                    permissions {
+                        edges {
+                            node {
+                                user {
+                                    id
+                                    name
+                                    email
+                                }
+                                level
+                            }
+                        }
+                    }
+                    investigations {
+                        edges {
+                            node {
+                                id
+                                name
+                            }
+                        }
+                    }
+                    samples {
+                        edges {
+                            node {
+                                id
+                                name
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -51,7 +79,7 @@ CREATE_STUDY = """
     mutation (
         $name: String!,
         $description: String,
-        $keywords: [String],
+        $keywords: [String!],
         $startDate: Date,
         $endDate: Date
     ) {
@@ -70,6 +98,7 @@ CREATE_STUDY = """
                 startDate
                 endDate
                 status
+                permissions { edges { node { user { id name email } level } } }
             }
         }
     }
