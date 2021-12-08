@@ -9,6 +9,7 @@
         - get_studies
         - get_study
         - get_sample
+        - get_samples
         - get_investigation
         - get_job
         - get_datafile

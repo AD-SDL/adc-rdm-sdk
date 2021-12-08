@@ -443,3 +443,40 @@ JOB = """
         }
     }
 """
+
+SAMPLES = """
+query ($searchString: String){
+    samples (searchString: $searchString) {
+        edges {
+            node {
+                id
+                name
+                keywords
+                created
+                updated
+                files {
+                    description
+                    name
+                    url
+                }
+                source {
+                    type
+                    companyName
+                    productUrl
+                    productNumber
+                }
+                preparationSteps
+                location {
+                    building
+                    storageUnit
+                    room
+                    subUnit
+                }
+                parent {
+                    id
+                }
+            }
+        }
+    }
+}
+"""

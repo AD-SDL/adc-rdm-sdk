@@ -13,6 +13,7 @@ class ADCQuery:
 CURRENT_USER = ADCQuery(raw_queries.CURRENT_USER)
 TOKENS = ADCQuery(raw_queries.TOKENS)
 STUDIES = ADCQuery(raw_queries.STUDIES)
+SAMPLES = ADCQuery(raw_queries.SAMPLES)
 STUDY = ADCQuery(raw_queries.STUDY)
 SAMPLE = ADCQuery(raw_queries.SAMPLE)
 DATAFILE = ADCQuery(raw_queries.DATAFILE)

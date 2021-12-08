@@ -32,6 +32,7 @@ Commands:
   investigation
   job
   remove-permissions
+  samples
   sample
   set-permissions
   studies

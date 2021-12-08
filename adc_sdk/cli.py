@@ -91,6 +91,15 @@ def studies():
 
 
 @app.command()
+def samples():
+    """
+    List samples available to the current user
+    """
+    client_method = "get_samples"
+    fetch_and_output_response(client_method)
+
+
+@app.command()
 def study(study_id: str):
     """
     Fetch a specific study

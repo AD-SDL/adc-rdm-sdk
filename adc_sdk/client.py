@@ -53,6 +53,18 @@ class ADCClient(ADCBaseClient):
         response = self._execute(queries.STUDY, variables)
         return Study.parse_response(response['study'])
 
+    def get_samples(self) -> dict:
+        """
+        Retrieve samples the current user has permission over.
+        Example:
+            ```
+            from adc_sdk.client import ADCClient
+            adc = ADCClient(<api_token>)
+            adc.get_samples()
+            ```
+        """
+        return self._execute(queries.SAMPLES)
+
     def get_sample(self, sample_id: str) -> Sample:
         """
         Retrieve a specific sample.
