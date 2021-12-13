@@ -213,13 +213,15 @@ class ADCClient(ADCBaseClient):
 
     def create_sample(
         self,
-        study_id: str,
         name: str,
-        file: BinaryIO = None,
-        keywords: list = None,
+        description: str = None,
+        formula: str = None,
+        source: dict = None,
+        location: dict = None,
+        preparation_steps: List[str] = None,
         parent_id: str = None,
-        source: str = None,
-    ) -> CreateSampleResponse:
+        keywords: List[str] = None,
+    ) -> dict:
         """
         Create a new sample.
         Example:
@@ -227,32 +229,37 @@ class ADCClient(ADCBaseClient):
             from adc_sdk.client import ADCClient
             adc = ADCClient(<api_token>)
             adc.create_sample(
-                <study_id>,
                 <sample_name>,
-                file=<binary_file>,
-                keywords=[<keywords>],
+                description=<description>,
+                formula=<formula>,
+                source=<source>,
+                location=<location>,
+                preparation_steps=<preparation_steps>,
                 parent_id=<parent_sample_id>,
-                source=<custom_subscription_message>
+                keywords=<keywords>
             )
             ```
         Arguments:
-            file: sample file, opened as binary (i.e. with 'rb')
-            study_id: study id
             name: sample name
-            keywords: sample keywords
+            description: sample description
+            formula: sample formula
+            source: sample source
+            location: sample location
+            preparation_steps: sample preparation steps
             parent_id: id of parent sample
-            source: custom additional string value
+            keywords: sample keywords
         """
         variables = {
-            "studyId": study_id,
             "name": name,
-            "file": file,
-            "keywords": keywords,
-            "parentId": parent_id,
+            "description": description,
+            "formula": formula,
             "source": source,
+            "location": location,
+            "preparationSteps": preparation_steps,
+            "parentId": parent_id,
+            "keywords": keywords,
         }
-        response = self._execute(queries.CREATE_SAMPLE, variables, file_upload=True)
-        return CreateSampleResponse.parse_obj(response)
+        return self._execute(queries.CREATE_SAMPLE, variables, file_upload=True)
 
     def create_datafile(
         self,

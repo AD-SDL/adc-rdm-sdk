@@ -134,27 +134,47 @@ CREATE_STUDY = """
 CREATE_SAMPLE = """
     mutation (
         $name: String!,
-        $studyId: ID!
-        $file: Upload,
-        $keywords: [String],
+        $description: String,
+        $formula: String,
+        $source: SourceInput,
+        $location: LocationInput,
+        $preparationSteps: [String!]
         $parentId: ID,
-        $source: String
+        $keywords: [String!]
     ) {
         createSample(
             name: $name,
-            studyId: $studyId,
-            file: $file,
-            keywords: $keywords,
+            description: $description,
+            formula: $formula,
+            source: $source,
+            location: $location,
+            preparationSteps: $preparationSteps,
             parentId: $parentId,
-            source: $source
+            keywords: $keywords
         ) {
             success
             sample {
                 id
+                parent {
+                    id
+                }
+                updated
                 name
                 keywords
-                parent { id name keywords url }
-                url
+                formula
+                source {
+                    type
+                    companyName
+                    productUrl
+                    productNumber
+                }
+                preparationSteps
+                location {
+                    building
+                    storageUnit
+                    room
+                    subUnit
+                }
             }
         }
     }
