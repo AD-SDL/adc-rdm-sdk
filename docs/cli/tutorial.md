@@ -25,6 +25,7 @@ Commands:
   create-job
   create-sample
   upload-sample-file
+  remove-sample-file
   create-study
   create-token
   current-user

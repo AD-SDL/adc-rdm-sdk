@@ -261,7 +261,7 @@ class ADCClient(ADCBaseClient):
         }
         return self._execute(queries.CREATE_SAMPLE, variables)
 
-    def add_files_to_sample(self, sample_id, files: List[dict]):
+    def add_files_to_sample(self, sample_id: str, files: List[dict]):
         """
         Add file attachments to a Sample record.
         Example:
@@ -289,6 +289,25 @@ class ADCClient(ADCBaseClient):
             "files": files
         }
         return self._execute(queries.ADD_FILES_TO_SAMPLE, variables, file_upload=True)
+
+    def remove_files_from_sample(self, sample_id: str, file_ids: List[str]):
+        """
+        Delete file attachment from Sample record.
+        Example:
+            ```
+            from adc_sdk.client import ADCClient
+            adc = ADCClient(<api_token>)
+            adc.remove_files_from_sample(<sample_id>, [<file_id_1>, <file_id_2>, ..., <file_id_n>])
+            ```
+        Arguments:
+            sample_id: sample id
+            file_ids: list of IDs of the files to be deleted from the sample record
+        """
+        variables = {
+            "sampleId": sample_id,
+            "files": file_ids
+        }
+        return self._execute(queries.REMOVE_FILES_FROM_SAMPLE, variables)
 
     def create_datafile(
         self,

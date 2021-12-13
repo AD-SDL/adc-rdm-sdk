@@ -277,6 +277,20 @@ def upload_sample_file(
         )
 
 
+@app.command(short_help="Upload file attachment to Sample record")
+def remove_sample_file(
+    sample_id: str = typer.Argument(..., help="ID of the target sample"),
+    file_id: str = typer.Argument(..., help="ID of file to be removed from the Sample record"),
+):
+    """
+    Remove file attachment from Sample record
+    """
+    client_method = "remove_files_from_sample"
+    fetch_and_output_response(
+        client_method, sample_id, [file_id]
+    )
+
+
 @app.command(short_help="Create an Investigation")
 def create_investigation(
     study_id: str = typer.Argument(

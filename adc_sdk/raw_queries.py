@@ -475,6 +475,7 @@ query ($searchString: String){
                 created
                 updated
                 files {
+                    id
                     description
                     name
                     url
@@ -514,6 +515,7 @@ mutation (
         sample {
             id
             files {
+                id
                 description
                 name
                 url
@@ -522,3 +524,25 @@ mutation (
     }
 }
 """
+
+REMOVE_FILES_FROM_SAMPLE = """
+mutation (
+    $sampleId: ID!,
+    $files: [ID!]!
+) {
+    removeFilesFromSample(
+        sampleId: $sampleId,
+        files: $files
+    ) {
+        success
+        sample {
+            id
+            files {
+                id
+                description
+                name
+                url
+            }
+        }
+    }
+}"""
