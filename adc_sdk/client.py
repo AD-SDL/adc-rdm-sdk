@@ -259,7 +259,36 @@ class ADCClient(ADCBaseClient):
             "parentId": parent_id,
             "keywords": keywords,
         }
-        return self._execute(queries.CREATE_SAMPLE, variables, file_upload=True)
+        return self._execute(queries.CREATE_SAMPLE, variables)
+
+    def add_files_to_sample(self, sample_id, files: List[dict]):
+        """
+        Add file attachments to a Sample record.
+        Example:
+            ```
+            from adc_sdk.client import ADCClient
+            adc = ADCClient(<api_token>)
+            with open(<file>, "rb") as open_file:
+                adc.add_files_to_sample(
+                    <sample_id>,
+                    files = [
+                        {
+                            "name": "<file attachment name>",
+                            "file": open_file,
+                            "description": "<file attachment description>",
+                        },
+                    ]
+                )
+            ```
+        Arguments:
+            sample_id: sample id
+            files: list of dictionary containing the files and their attributes to be uploaded
+        """
+        variables = {
+            "sampleId": sample_id,
+            "files": files
+        }
+        return self._execute(queries.ADD_FILES_TO_SAMPLE, variables, file_upload=True)
 
     def create_datafile(
         self,

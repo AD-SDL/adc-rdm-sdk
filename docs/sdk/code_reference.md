@@ -17,6 +17,7 @@
         - delete_token
         - create_study
         - create_sample
+        - add_files_to_sample
         - create_datafile
         - create_investigation
         - create_job

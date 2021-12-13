@@ -500,3 +500,25 @@ query ($searchString: String){
     }
 }
 """
+
+ADD_FILES_TO_SAMPLE = """
+mutation (
+    $sampleId: ID!,
+    $files: [FileInput!]!
+) {
+    addFilesToSample(
+        sampleId: $sampleId,
+        files: $files
+    ) {
+        success
+        sample {
+            id
+            files {
+                description
+                name
+                url
+            }
+        }
+    }
+}
+"""

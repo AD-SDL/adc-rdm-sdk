@@ -252,6 +252,31 @@ def create_sample(
     )
 
 
+@app.command(short_help="Upload file attachment to Sample record")
+def upload_sample_file(
+    sample_id: str = typer.Argument(..., help="ID of the target sample"),
+    name: str = typer.Argument(..., help="User-provided name of the file attachment"),
+    file: str = typer.Argument(..., help="Local path to the actual file to be uploaded"),
+    description: str = typer.Option(default=None, help='Description of the file to be uploaded',),
+):
+    """
+    Upload file attachment to Sample record
+    """
+    client_method = "add_files_to_sample"
+    if not os.path.isfile(file):
+        typer.echo("Invalid file path", err=True)
+    with open(file, "rb") as attachment:
+        files = [{
+            "name": name,
+            "file": attachment,
+            "description": description or name,
+        }]
+
+        fetch_and_output_response(
+            client_method, sample_id, files
+        )
+
+
 @app.command(short_help="Create an Investigation")
 def create_investigation(
     study_id: str = typer.Argument(

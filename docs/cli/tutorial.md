@@ -24,6 +24,7 @@ Commands:
   create-investigation
   create-job
   create-sample
+  upload-sample-file
   create-study
   create-token
   current-user
