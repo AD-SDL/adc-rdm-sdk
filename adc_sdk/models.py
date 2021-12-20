@@ -24,18 +24,16 @@ class User(BaseModel):
     updated: Optional[datetime] = Field(None, help='Latest time when user information was modified')
 
 
-class Sample(BaseModel):
-    """Single sample from a larger study"""
+class File(BaseModel):
+    """Single file attachment for Samples"""
 
-    id: str = Field(..., help='Unique identifier of the sample')
-    name: str = Field(..., help='User-provided name of the sample. Need not be unique')
-    keywords: List[str] = Field(default_factory=list, help='List of keywords that categorize a sample')
-    url: HttpUrl = Field(..., help='File associated with this sample')
-    created: datetime = Field(..., help='Date at which this sample was created')
-    user: Optional[User] = Field(None, help='User who created this sample')
+    id: str = Field(..., help='Unique identifier of the attachment record')
+    name: str = Field(..., help='Name of the attachment')
+    url: HttpUrl = Field(..., help='URL of the hosted attachment file')
+    description: str = Field(None, help='Longer-form description of the attachment')
 
     def get_file(self, **kwargs) -> str:
-        """Access the file associated with this sample
+        """Access the file associated with this attachment
 
         Keyword arguments are passed to requests.get
 
@@ -44,6 +42,46 @@ class Sample(BaseModel):
         """
 
         return requests.get(self.url, **kwargs).text
+
+
+class ParentSample(BaseModel):
+    """ Parent sample node """
+    id: str = Field(..., help='Unique identifier of the parent sample')
+
+
+class SampleSource(BaseModel):
+    """Sample source information: type, company name, product url and product number"""
+
+    type: str = Field(..., help='Sample type')
+    company_name: str = Field(None, help='Name of the sample provider')
+    product_url: str = Field(None, help='URL of the original sample (from the provider)')
+    product_number: str = Field(None, help='Sample SKU')
+
+
+class SampleLocation(BaseModel):
+    """ Sample physical location"""
+    building: str = Field(None, help='Building name')
+    room: str = Field(None, help='Room')
+    storage_unit: str = Field(None, help='Storage unit')
+    sub_unit: str = Field(None, help='Sub unit')
+
+
+class Sample(BaseModel):
+    """Single sample from a larger study"""
+
+    id: str = Field(..., help='Unique identifier of the sample')
+    name: str = Field(..., help='User-provided name of the sample. Need not be unique')
+    description: str = Field(..., help='User-provided description of the sample. Need not be unique')
+    formula: str = Field(..., help='Formula of the sample')
+    keywords: List[str] = Field(default_factory=list, help='List of keywords that categorize a sample')
+    files: List[File] = Field(default_factory=list, help='List of files attached to the sample')
+    created: datetime = Field(..., help='Date at which this sample was created')
+    updated: datetime = Field(..., help='Date at which this sample record was last updated')
+    user: Optional[User] = Field(None, help='User who created this sample')
+    parent: ParentSample = Field(None, help='Parent sample node')
+    source: SampleSource = Field(None, help='Sample source information')
+    preparation_steps: List[str] = Field(default_factory=list, help='List of preparation steps for the sample')
+    location: SampleLocation = Field(None, help='Sample location information')
 
 
 class Permission(BaseModel):

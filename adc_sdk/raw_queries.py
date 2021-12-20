@@ -420,9 +420,52 @@ SAMPLE = """
         sample(id: $id){
             id
             name
+            description
             keywords
-            url
-            user { id name email }
+            created
+            updated
+            formula
+            parent {
+                id
+            }
+            user {
+                id
+                name
+                email
+            }
+            files {
+                id
+                description
+                name
+                url
+            }
+            source {
+                type
+                companyName
+                productUrl
+                productNumber
+            }
+            preparationSteps
+            location {
+                building
+                storageUnit
+                room
+                subUnit
+            }
+            children {
+                id
+                name
+                updated
+                parent {
+                    id
+                }
+                children {
+                    id
+                }
+            }
+            studies {
+                id
+            }            
         }
     }
 """
