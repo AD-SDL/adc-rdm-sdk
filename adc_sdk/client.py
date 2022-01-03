@@ -5,7 +5,7 @@ from adc_sdk import queries, exceptions
 from adc_sdk.base import ADCBaseClient
 from typing import Iterator
 
-from adc_sdk.models import User, Sample, Study, StudySubscriptionEvent, CreateSampleResponse
+from adc_sdk.models import User, Sample, Study, StudySubscriptionEvent, Investigation
 
 
 class ADCClient(ADCBaseClient):
@@ -52,6 +52,18 @@ class ADCClient(ADCBaseClient):
         variables = {"id": study_id}
         response = self._execute(queries.STUDY, variables)
         return Study.parse_response(response['study'])
+
+    def get_samples(self) -> dict:
+        """
+        Retrieve samples the current user has permission over.
+        Example:
+            ```
+            from adc_sdk.client import ADCClient
+            adc = ADCClient(<api_token>)
+            adc.get_samples()
+            ```
+        """
+        return self._execute(queries.SAMPLES)
 
     def get_sample(self, sample_id: str) -> Sample:
         """
@@ -125,7 +137,8 @@ class ADCClient(ADCBaseClient):
             investigation_id: Investigation ID
         """
         variables = {"id": investigation_id}
-        return self._execute(queries.INVESTIGATION, variables)
+        response = self._execute(queries.INVESTIGATION, variables)
+        return Investigation.parse_obj(response['investigation'])
 
     def create_token(self, name: str) -> dict:
         """
@@ -201,13 +214,15 @@ class ADCClient(ADCBaseClient):
 
     def create_sample(
         self,
-        study_id: str,
         name: str,
-        file: BinaryIO = None,
-        keywords: list = None,
+        description: str = None,
+        formula: str = None,
+        source: dict = None,
+        location: dict = None,
+        preparation_steps: List[str] = None,
         parent_id: str = None,
-        source: str = None,
-    ) -> CreateSampleResponse:
+        keywords: List[str] = None,
+    ) -> dict:
         """
         Create a new sample.
         Example:
@@ -215,32 +230,85 @@ class ADCClient(ADCBaseClient):
             from adc_sdk.client import ADCClient
             adc = ADCClient(<api_token>)
             adc.create_sample(
-                <study_id>,
                 <sample_name>,
-                file=<binary_file>,
-                keywords=[<keywords>],
+                description=<description>,
+                formula=<formula>,
+                source=<source>,
+                location=<location>,
+                preparation_steps=<preparation_steps>,
                 parent_id=<parent_sample_id>,
-                source=<custom_subscription_message>
+                keywords=<keywords>
             )
             ```
         Arguments:
-            file: sample file, opened as binary (i.e. with 'rb')
-            study_id: study id
             name: sample name
-            keywords: sample keywords
+            description: sample description
+            formula: sample formula
+            source: sample source
+            location: sample location
+            preparation_steps: sample preparation steps
             parent_id: id of parent sample
-            source: custom additional string value
+            keywords: sample keywords
         """
         variables = {
-            "studyId": study_id,
             "name": name,
-            "file": file,
-            "keywords": keywords,
-            "parentId": parent_id,
+            "description": description,
+            "formula": formula,
             "source": source,
+            "location": location,
+            "preparationSteps": preparation_steps,
+            "parentId": parent_id,
+            "keywords": keywords,
         }
-        response = self._execute(queries.CREATE_SAMPLE, variables, file_upload=True)
-        return CreateSampleResponse.parse_obj(response)
+        return self._execute(queries.CREATE_SAMPLE, variables)
+
+    def add_files_to_sample(self, sample_id: str, files: List[dict]):
+        """
+        Add file attachments to a Sample record.
+        Example:
+            ```
+            from adc_sdk.client import ADCClient
+            adc = ADCClient(<api_token>)
+            with open(<file>, "rb") as open_file:
+                adc.add_files_to_sample(
+                    <sample_id>,
+                    files = [
+                        {
+                            "name": "<file attachment name>",
+                            "file": open_file,
+                            "description": "<file attachment description>",
+                        },
+                    ]
+                )
+            ```
+        Arguments:
+            sample_id: sample id
+            files: list of dictionary containing the files and their attributes to be uploaded
+        """
+        variables = {
+            "sampleId": sample_id,
+            "files": files
+        }
+        return self._execute(queries.ADD_FILES_TO_SAMPLE, variables, file_upload=True)
+
+    def remove_files_from_sample(self, sample_id: str, file_ids: List[str]):
+        """
+        Delete file attachment from Sample record.
+        Example:
+            ```
+            from adc_sdk.client import ADCClient
+            adc = ADCClient(<api_token>)
+            adc.remove_files_from_sample(<sample_id>, [<file_id_1>, <file_id_2>, ..., <file_id_n>])
+            ```
+        Arguments:
+            sample_id: sample id
+            file_ids: list of IDs of the files to be deleted from the sample record
+        """
+        variables = {
+            "sampleId": sample_id,
+            "files": file_ids
+        }
+        return self._execute(queries.REMOVE_FILES_FROM_SAMPLE, variables)
 
     def create_datafile(
         self,
@@ -286,7 +354,7 @@ class ADCClient(ADCBaseClient):
         name: str,
         description: str = None,
         investigation_type: str = None,
-        keywords: list = None,
+        keywords: List[str] = None,
         start_date: date = None,
         end_date: date = None,
         source: str = None,

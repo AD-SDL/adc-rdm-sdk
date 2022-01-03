@@ -91,6 +91,15 @@ def studies():
 
 
 @app.command()
+def samples():
+    """
+    List samples available to the current user
+    """
+    client_method = "get_samples"
+    fetch_and_output_response(client_method)
+
+
+@app.command()
 def study(study_id: str):
     """
     Fetch a specific study
@@ -185,33 +194,101 @@ def create_study(
 @app.command(short_help="Create a Sample")
 def create_sample(
     name: str = typer.Argument(..., help="User-provided name of the sample"),
-    study_id: str = typer.Argument(..., help="ID of the study this sample belongs to"),
-    file: str = typer.Option(default=None, help="Path to the sample file"),
-    keywords: List[str] = typer.Option(default=None, help="Space separated keywords"),
+    description: str = typer.Option(default=None, help="User-provided description of the sample"),
+    formula: str = typer.Option(default=None, help="Chemical formula of the sample"),
+    type: str = typer.Option(default='other', help='Sample type ["purchased", "synthesised", "purchased_and_synthesised"] (default: "other")'),
+    company_name: str = typer.Option(default=None, help='Name of the company where the sample was generated'),
+    product_url: str = typer.Option(default=None, help='URL of the sample'),
+    product_number: str = typer.Option(default=None, help='Sample product SKU'),
+    building: str = typer.Option(default=None, help='Building where the sample is stored'),
+    room: str = typer.Option(default=None, help='Room where the sample is stored'),
+    storage_unit: str = typer.Option(default=None, help='Storage unit where the sample is stored'),
+    sub_unit: str = typer.Option(default=None, help='Sub unit of storage where the sample is stored'),
     parent_id: str = typer.Option(default=None, help="ID of the parent sample"),
-    source: str = typer.Option(
-        default=None,
-        help='Custom message to include as the "source" field in the study\'s subscriptions',
-    ),
+    keywords: List[str] = typer.Option(default=None, help="Space separated keywords"),
+
+
 ):
     """
-    Create a Sample under the specified Study to (possibly) be used as input for a Job to generate Datafiles \n
-    * Triggers notifications for its Study subscriptors
+    Create a Sample under the specified Study to (possibly) be used as input for a Job to generate Datafiles
     """
     client_method = "create_sample"
+
     if keywords:
         keywords = [k for k in keywords[0].split(" ")]
-    if file:
-        if not os.path.isfile(file):
-            typer.echo("Invalid file path", err=True)
-        with open(file, "rb") as sample_file:
-            fetch_and_output_response(
-                client_method, study_id, name, sample_file, keywords, parent_id, source
-            )
+
+    if not any([type, company_name, product_url, product_number]):
+        source = None
     else:
+        source = {
+            "type": type,
+            "companyName": company_name,
+            "productUrl": product_url,
+            "productNumber": product_number
+        }
+
+    if not any([building, room, storage_unit, sub_unit]):
+        location = None
+    else:
+        location = {
+            "building": building,
+            "room": room,
+            "storageUnit": storage_unit,
+            "subUnit": sub_unit
+        }
+
+    preparation_steps = None
+
+    fetch_and_output_response(
+        client_method,
+        name,
+        description,
+        formula,
+        source,
+        location,
+        preparation_steps,
+        parent_id,
+        keywords,
+    )
+
+
+@app.command(short_help="Upload file attachment to Sample record")
+def upload_sample_file(
+    sample_id: str = typer.Argument(..., help="ID of the target sample"),
+    name: str = typer.Argument(..., help="User-provided name of the file attachment"),
+    file: str = typer.Argument(..., help="Local path to the actual file to be uploaded"),
+    description: str = typer.Option(default=None, help='Description of the file to be uploaded',),
+):
+    """
+    Upload file attachment to Sample record
+    """
+    client_method = "add_files_to_sample"
+    if not os.path.isfile(file):
+        typer.echo("Invalid file path", err=True)
+    with open(file, "rb") as attachment:
+        files = [{
+            "name": name,
+            "file": attachment,
+            "description": description or name,
+        }]
+
         fetch_and_output_response(
-            client_method, study_id, name, None, keywords, parent_id, source
+            client_method, sample_id, files
         )
+
+
+@app.command(short_help="Upload file attachment to Sample record")
+def remove_sample_file(
+    sample_id: str = typer.Argument(..., help="ID of the target sample"),
+    file_id: str = typer.Argument(..., help="ID of file to be removed from the Sample record"),
+):
+    """
+    Remove file attachment from Sample record
+    """
+    client_method = "remove_files_from_sample"
+    fetch_and_output_response(
+        client_method, sample_id, [file_id]
+    )
 
 
 @app.command(short_help="Create an Investigation")
@@ -230,7 +307,7 @@ def create_investigation(
         default=None, formats=["%Y-%m-%d"], help="Date when the investigation ended"
     ),
     keywords: List[str] = typer.Option(default=None, help="Space separated keywords"),
-    investigation_type: str = typer.Option(default=None, help="Investigation type"),
+    type: str = typer.Option(default=None, help="Investigation type"),
     source: str = typer.Option(
         default=None,
         help='Custom message to include as the "source" field in the study\'s subscriptions',
@@ -252,7 +329,7 @@ def create_investigation(
         study_id,
         name,
         description,
-        investigation_type,
+        type,
         keywords,
         start_date,
         end_date,

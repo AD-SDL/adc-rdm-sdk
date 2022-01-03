@@ -19,11 +19,39 @@ STUDIES = """
                     name
                     description
                     keywords
-                    startDate
                     status
-                    permissions { edges { node { user { id name email } level } } }
-                    investigations { edges { node { id name description keywords startDate endDate } } }
-                    samples { edges { node { id name url keywords } } }
+                    created
+                    updated
+                    startDate
+                    endDate
+                    permissions {
+                        edges {
+                            node {
+                                user {
+                                    id
+                                    name
+                                    email
+                                }
+                                level
+                            }
+                        }
+                    }
+                    investigations {
+                        edges {
+                            node {
+                                id
+                                name
+                            }
+                        }
+                    }
+                    samples {
+                        edges {
+                            node {
+                                id
+                                name
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -37,12 +65,40 @@ STUDY = """
             name
             description
             keywords
+            status
+            created
+            updated
             startDate
             endDate
-            status
-            permissions { edges { node { user { id name email } level } } }
-            investigations { edges { node { id name description keywords startDate endDate } } }
-            samples { edges { node { id name url keywords } } }
+            permissions {
+                edges {
+                    node {
+                        user {
+                            id
+                            name
+                            email
+                        }
+                        level
+                    }
+                }
+            }
+            investigations {
+                edges {
+                    node {
+                        id
+                        name
+                        created
+                    }
+                }
+            }
+            samples {
+                edges {
+                    node {
+                        id
+                        name
+                    }
+                }
+            }
         }
     }
 """
@@ -51,7 +107,7 @@ CREATE_STUDY = """
     mutation (
         $name: String!,
         $description: String,
-        $keywords: [String],
+        $keywords: [String!],
         $startDate: Date,
         $endDate: Date
     ) {
@@ -70,6 +126,7 @@ CREATE_STUDY = """
                 startDate
                 endDate
                 status
+                permissions { edges { node { user { id name email } level } } }
             }
         }
     }
@@ -78,27 +135,47 @@ CREATE_STUDY = """
 CREATE_SAMPLE = """
     mutation (
         $name: String!,
-        $studyId: ID!
-        $file: Upload,
-        $keywords: [String],
+        $description: String,
+        $formula: String,
+        $source: SourceInput,
+        $location: LocationInput,
+        $preparationSteps: [String!]
         $parentId: ID,
-        $source: String
+        $keywords: [String!]
     ) {
         createSample(
             name: $name,
-            studyId: $studyId,
-            file: $file,
-            keywords: $keywords,
+            description: $description,
+            formula: $formula,
+            source: $source,
+            location: $location,
+            preparationSteps: $preparationSteps,
             parentId: $parentId,
-            source: $source
+            keywords: $keywords
         ) {
             success
             sample {
                 id
+                parent {
+                    id
+                }
+                updated
                 name
                 keywords
-                parent { id name keywords url }
-                url
+                formula
+                source {
+                    type
+                    companyName
+                    productUrl
+                    productNumber
+                }
+                preparationSteps
+                location {
+                    building
+                    storageUnit
+                    room
+                    subUnit
+                }
             }
         }
     }
@@ -144,14 +221,13 @@ INVESTIGATION = """
             study {
                 id
                 name
-                description
-                keywords
-                startDate
-                status
+                created
             }
             jobs { edges { node { id startDatetime endDatetime status  } } }
             startDate
             endDate
+            created
+            updated
         }
     }
 """
@@ -344,9 +420,52 @@ SAMPLE = """
         sample(id: $id){
             id
             name
+            description
             keywords
-            url
-            user { id name email }
+            created
+            updated
+            formula
+            parent {
+                id
+            }
+            user {
+                id
+                name
+                email
+            }
+            files {
+                id
+                description
+                name
+                url
+            }
+            source {
+                type
+                companyName
+                productUrl
+                productNumber
+            }
+            preparationSteps
+            location {
+                building
+                storageUnit
+                room
+                subUnit
+            }
+            children {
+                id
+                name
+                updated
+                parent {
+                    id
+                }
+                children {
+                    id
+                }
+            }
+            studies {
+                id
+            }            
         }
     }
 """
@@ -387,3 +506,86 @@ JOB = """
         }
     }
 """
+
+SAMPLES = """
+query ($searchString: String){
+    samples (searchString: $searchString) {
+        edges {
+            node {
+                id
+                name
+                keywords
+                created
+                updated
+                files {
+                    id
+                    description
+                    name
+                    url
+                }
+                source {
+                    type
+                    companyName
+                    productUrl
+                    productNumber
+                }
+                preparationSteps
+                location {
+                    building
+                    storageUnit
+                    room
+                    subUnit
+                }
+                parent {
+                    id
+                }
+            }
+        }
+    }
+}
+"""
+
+ADD_FILES_TO_SAMPLE = """
+mutation (
+    $sampleId: ID!,
+    $files: [FileInput!]!
+) {
+    addFilesToSample(
+        sampleId: $sampleId,
+        files: $files
+    ) {
+        success
+        sample {
+            id
+            files {
+                id
+                description
+                name
+                url
+            }
+        }
+    }
+}
+"""
+
+REMOVE_FILES_FROM_SAMPLE = """
+mutation (
+    $sampleId: ID!,
+    $files: [ID!]!
+) {
+    removeFilesFromSample(
+        sampleId: $sampleId,
+        files: $files
+    ) {
+        success
+        sample {
+            id
+            files {
+                id
+                description
+                name
+                url
+            }
+        }
+    }
+}"""

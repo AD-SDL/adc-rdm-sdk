@@ -24,6 +24,8 @@ Commands:
   create-investigation
   create-job
   create-sample
+  upload-sample-file
+  remove-sample-file
   create-study
   create-token
   current-user
@@ -32,6 +34,7 @@ Commands:
   investigation
   job
   remove-permissions
+  samples
   sample
   set-permissions
   studies
