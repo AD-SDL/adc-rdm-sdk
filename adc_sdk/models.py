@@ -101,6 +101,7 @@ class Investigation(BaseModel):
 class Study(BaseModel):
     """Single study from a larger investigation"""
 
+    id: str = Field(..., help='Unique identifier of the study')
     name: str = Field(..., help='User-provided name of the study')
     description: str = Field(None, help='Longer-form description of the study')
     keywords: List[str] = Field(default_factory=list, help='List of keywords that categorize a study')
