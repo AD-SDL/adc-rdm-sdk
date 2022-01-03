@@ -4,12 +4,20 @@ from datetime import datetime
 from typing import Optional, List
 
 import requests
-from pydantic import BaseModel, Field, EmailStr, HttpUrl
+from pydantic import BaseModel, Field, EmailStr, HttpUrl, validator
+from .references import StudyReference, InvestigationReference
 
 
 def _remove_relay_syntax(data: dict) -> List[dict]:
     """Remove the "edge" and "node" syntax from API response introduced by relay"""
     return [x['node'] for x in data['edges']]
+
+
+def parse_string_dates(cls, value):
+    return datetime.strptime(
+        value,
+        "%Y-%m-%d"
+    )
 
 
 class User(BaseModel):
@@ -93,19 +101,38 @@ class Permission(BaseModel):
 
 # TODO (wardlt): Not sure what the investigation data model looks like yet
 class Investigation(BaseModel):
-    """A collection of studies"""
-    class Config:
-        extra = 'ignore'
+    """Single instanced investigations that arE part of a study"""
+
+    id: str = Field(..., help='Unique identifier')
+    name: str = Field(..., help='User-provided name')
+    description: str = Field(None, help='Longer-form description')
+    investigation_type: str = Field(..., alias='investigationType', help='Type of investigation')
+    keywords: List[str] = Field(default_factory=list, help='List of keywords/tags')
+    start_date: Optional[datetime] = Field(None, alias="startDate", help='Date when the investigation began')
+    end_date: Optional[datetime] = Field(None, alias="startDate", help='Date when the investigation ended')
+    created: datetime = Field(None, help='Date when this investigation record was created')
+    updated: datetime = Field(None, help=' Latest date when this investigation record was created')
+    user: User = Field(None, help='User who created this investigation')
+    study: StudyReference = Field(None, help='Study the investigation belongs to')
+
+    @validator("start_date", pre=True)
+    def parse_start_date(cls, value):
+        return parse_string_dates(cls, value)
+
+    @validator("end_date", pre=True)
+    def parse_end_date(cls, value):
+        return parse_string_dates(cls, value)
 
 
 class Study(BaseModel):
-    """Single study from a larger investigation"""
+    """Larger entity containing multiple investigations"""
 
     id: str = Field(..., help='Unique identifier of the study')
     name: str = Field(..., help='User-provided name of the study')
     description: str = Field(None, help='Longer-form description of the study')
     keywords: List[str] = Field(default_factory=list, help='List of keywords that categorize a study')
-    start_date: Optional[datetime] = Field(None, help='Date when the study began')
+    start_date: Optional[datetime] = Field(None, alias="startDate", help='Date when the study began')
+    end_date: Optional[datetime] = Field(None, alias="endDate", help='Date when the study ended')
     created: datetime = Field(..., help='Date when this study record was created')
     updated: datetime = Field(..., help=' Latest date when this study record was created')
     permissions: List[Permission] = Field(default_factory=list, help='List of user permissions to access this study')
@@ -128,10 +155,18 @@ class Study(BaseModel):
         response = response.copy()
 
         # Convert samples, investigations and permissions to their respective data models
-        for tag, dtype in [('samples', Sample), ('investigations', Investigation), ('permissions', Permission)]:
+        for tag, dtype in [('samples', Sample), ('investigations', InvestigationReference), ('permissions', Permission)]:
             response[tag] = [dtype.parse_obj(x) for x in _remove_relay_syntax(response[tag])]
 
         return cls.parse_obj(response)
+
+    @validator("start_date", pre=True)
+    def parse_start_date(cls, value):
+        return parse_string_dates(cls, value)
+
+    @validator("end_date", pre=True)
+    def parse_end_date(cls, value):
+        return parse_string_dates(cls, value)
 
 
 class CreateSampleResponse(BaseModel):

@@ -5,7 +5,7 @@ from adc_sdk import queries, exceptions
 from adc_sdk.base import ADCBaseClient
 from typing import Iterator
 
-from adc_sdk.models import User, Sample, Study, StudySubscriptionEvent, CreateSampleResponse
+from adc_sdk.models import User, Sample, Study, StudySubscriptionEvent, Investigation
 
 
 class ADCClient(ADCBaseClient):
@@ -137,7 +137,8 @@ class ADCClient(ADCBaseClient):
             investigation_id: Investigation ID
         """
         variables = {"id": investigation_id}
-        return self._execute(queries.INVESTIGATION, variables)
+        response = self._execute(queries.INVESTIGATION, variables)
+        return Investigation.parse_obj(response['investigation'])
 
     def create_token(self, name: str) -> dict:
         """
@@ -353,7 +354,7 @@ class ADCClient(ADCBaseClient):
         name: str,
         description: str = None,
         investigation_type: str = None,
-        keywords: list = None,
+        keywords: List[str] = None,
         start_date: date = None,
         end_date: date = None,
         source: str = None,

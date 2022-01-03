@@ -87,6 +87,7 @@ STUDY = """
                     node {
                         id
                         name
+                        created
                     }
                 }
             }
@@ -220,14 +221,13 @@ INVESTIGATION = """
             study {
                 id
                 name
-                description
-                keywords
-                startDate
-                status
+                created
             }
             jobs { edges { node { id startDatetime endDatetime status  } } }
             startDate
             endDate
+            created
+            updated
         }
     }
 """
