@@ -307,7 +307,7 @@ def create_investigation(
         default=None, formats=["%Y-%m-%d"], help="Date when the investigation ended"
     ),
     keywords: List[str] = typer.Option(default=None, help="Space separated keywords"),
-    investigation_type: str = typer.Option(default=None, help="Investigation type"),
+    type: str = typer.Option(default=None, help="Investigation type"),
     source: str = typer.Option(
         default=None,
         help='Custom message to include as the "source" field in the study\'s subscriptions',
@@ -329,7 +329,7 @@ def create_investigation(
         study_id,
         name,
         description,
-        investigation_type,
+        type,
         keywords,
         start_date,
         end_date,
